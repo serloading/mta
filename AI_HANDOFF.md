@@ -2518,6 +2518,26 @@ Eski parçalı SEO metin blokları (`credential-band`, `lab-section`, `sector-gr
 - **Canlı yayında** `mta:sync-content` çalıştırılırsa kapsam etkilenmez (ayrı komut). Kapsam'ı config'ten tazelemek için `mta:sync-scope --force`.
 - Not: `tools/seed-*.php` gibi Filament dışı scriptler yok; kapsam düzenlemesi tamamen panelden.
 
+## 2026-09-02 (2) — Ürünler Katalog Sayfası + Kapsam Index Rayı
+
+**`/urunler` — filtreli B2B ürün kataloğu** (eski taksonomi yönlendirme sayfası kaldırıldı):
+- `SiteController::products()` yeniden yazıldı: `?q` arama (name/model/sku/brand/category), `?kategori[]` + `?marka[]` + `?durum[]` (turkak = `related_services` dolu, gorselli = `image` dolu) facet filtreleri, `?sirala` (onerilen/az/za/marka), `LengthAwarePaginator` (`?sayfa`, 24/sayfa). Geriye uyum: `?brand=` → `marka[]`.
+- `facetCategories` (count>0, adet sırası, ilk 20) + `facetBrands` (count>0).
+- `pages/products.blade.php` (Tailwind): dark katalog başlığı + canlı arama; `lg:grid-cols-12` → sol `col-span-3` sticky facet sidebar (`max-h-[85vh]` scroll; kategori/marka/durum checkbox + `(adet)` + "Filtreleri Temizle"), sağ `col-span-9` toolbar (toplam + sıralama select + grid/list toggle) + ürün kartı grid (`sm:2 xl:3`; görselsizde SVG cihaz ikonu — gri kutu değil) + manuel Tailwind sayfalandırma + marka logo grid + tek CTA banner.
+- `app.js` `setupCatalogPage()`: checkbox `change` → form auto-submit; sıralama select `change` → submit; arama 500 ms debounce submit. Grid/list toggle mevcut `catalog.js` (`data-catalog` + `data-grid` + `[data-view]`).
+- `app.css`: `.catalog-grid.is-list` yatay kart düzeni.
+- **Test:** `AdminPanelTest::test_admin_category_and_brand_images_render_on_catalog_pages` güncellendi — `/urunler` artık katalog; taksonomi-kart assertion'ları çıkarıldı, marka ribbon + ürün kartı kontrolü eklendi. `/urunler/{kategori}`, `/urunler/marka/{marka}`, `/markalar` testleri değişmedi.
+
+**`/kapsam` — pill sekmeler → dikey index rayı** (kullanıcı: "pill'ler çok AI gibi, mobilde taşıyor"):
+- `pages/scope.blade.php`: `lg:grid-cols-12` → sol `col-span-3` sticky "Ölçüm Alanları" rayı (ikon + başlık + grup adedi; aktifte teal sol-border + `#f0fdfa` zemin), sağ `col-span-9` kategori blokları. Ray öğeleri `<a href="#slug">` (buton değil). Mobilde yatay kaydırılabilir şerit, `lg` dikey ray.
+- `scope.js`: anchor click `preventDefault` + filtrele + smooth scroll; `IntersectionObserver` scrollspy (yalnızca filtre="Tümü" & arama boşken rayı görünen bölümle senkronlar). `data-scope-*` hook'ları korundu.
+- `app.css`: `.scope-tab` → `.scope-rail` bileşeni.
+
+### Doğrulama
+- `php artisan test` 13/13, `npm run build` OK.
+- Yerelde (curl + DOM): katalog `?q`/`?kategori[]`/`?sirala`/`?sayfa` sunucu tarafı çalışıyor; checkbox auto-submit + grid/list toggle + debounce arama JS bağlı; Kapsam rayı tıklama → filtre + scroll, scrollspy, arama, yatay taşma yok.
+- **Deploy:** `395587b` (katalog) + `1b10e0e` (kapsam rayı) → `demo.mtaend.com`: `git pull` + `public/build` scp + `optimize:clear` + `view/config/route:cache` + `filament:optimize`. `/urunler` 200 (451 ürün, `?kategori[]=hot-plate`→4), `/kapsam` 200 (rail).
+
 ## YAPILACAKLAR (yeni sohbette devam)
 
 Aşağıdaki iş bu turda **yapılmadı** — kullanıcı ayrıntılı tasarım brief'i verdi, odaklı bir tur gerektirir:
