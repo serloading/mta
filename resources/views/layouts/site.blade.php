@@ -128,45 +128,89 @@
                     ->reject(fn ($c) => in_array($c['slug'] ?? null, ['ph-metre', 'termal-analiz'], true));
                 $megaRootCats = $megaProductCats->filter(fn ($c) => empty($c['parent_slug']))->values();
                 $megaChildrenBy = $megaProductCats->filter(fn ($c) => ! empty($c['parent_slug']))->groupBy('parent_slug');
+                $megaBrandBySlug = collect(config('mta.product_brands'))->keyBy('slug');
+                $megaCatBrandSlugs = config('mta.product_category_brands', []);
+                $megaBrandChips = function (string $slug) use ($megaBrandBySlug, $megaCatBrandSlugs) {
+                    return collect($megaCatBrandSlugs[$slug] ?? [])
+                        ->map(fn ($s) => $megaBrandBySlug->get($s))
+                        ->filter()
+                        ->take(6)
+                        ->values();
+                };
             @endphp
 
             <nav class="mb-nav desktop-nav" aria-label="Ana navigasyon">
                 <div class="mega-nav-item">
                     <a class="mega-trigger" href="{{ route('products.index') }}" aria-haspopup="true" aria-expanded="false" data-mega-trigger>Ürünler {!! $mi['cdown'] !!}</a>
-                    <div class="mega-menu mega-menu--products">
+                    <div class="mega-menu mega-menu--products" data-product-mega>
                         <div class="mega-panel">
-                            <div class="mega-grid mega-grid--products">
-                                <div class="mega-cats" role="list">
-                                    @foreach($megaRootCats as $cat)
+                            <div class="grid grid-cols-12 gap-0">
+                                {{-- SOL: ana kategoriler --}}
+                                <div class="col-span-3 border-r border-slate-100 pr-3">
+                                    <div class="mega-scroll max-h-[440px] space-y-0.5 overflow-y-auto pr-1">
+                                        @foreach($megaRootCats as $i => $cat)
+                                            <button type="button" data-mega-cat="{{ $cat['slug'] }}"
+                                                aria-selected="{{ $i === 0 ? 'true' : 'false' }}"
+                                                class="group/mc flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-[13px] font-semibold text-slate-700 transition-all hover:bg-teal-50 hover:text-teal-700 aria-selected:bg-teal-50 aria-selected:text-teal-700">
+                                                <span class="flex items-center gap-2">
+                                                    <span class="shrink-0 text-slate-400 group-hover/mc:text-teal-600 group-aria-selected/mc:text-teal-600 [&>svg]:h-4 [&>svg]:w-4">{!! $megaIcon($cat['name']) !!}</span>
+                                                    {{ $cat['name'] }}
+                                                </span>
+                                                <svg class="h-3.5 w-3.5 shrink-0 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                {{-- SAĞ: kategoriye göre değişen panel --}}
+                                <div class="col-span-9 pl-6">
+                                    @foreach($megaRootCats as $i => $cat)
                                         @php($kids = $megaChildrenBy->get($cat['slug'], collect()))
-                                        <div class="mega-cat" role="listitem">
-                                            <a class="mega-cat-link" href="{{ route('products.category', $cat['slug']) }}">
-                                                <span class="mega-cat-ico">{!! $megaIcon($cat['name']) !!}</span>
-                                                <span class="mega-cat-name">{{ $cat['name'] }}</span>
-                                                <span class="mega-cat-chev">{!! $mi['chev'] !!}</span>
-                                            </a>
-                                            <div class="mega-cat-sub">
-                                                <div class="mega-sub">
-                                                    <div class="mega-sub-head">
-                                                        <h3>{{ $cat['name'] }} alt kategorileri</h3>
-                                                        <a href="{{ route('products.category', $cat['slug']) }}">Tümünü incele →</a>
+                                        @php($chips = $megaBrandChips($cat['slug']))
+                                        @php($feat = $megaFeatureProducts[$cat['slug']] ?? ($kids->isNotEmpty() ? ($megaFeatureProducts[$kids->first()['slug']] ?? null) : null))
+                                        <div data-mega-panel="{{ $cat['slug'] }}" class="{{ $i === 0 ? 'grid' : 'hidden' }} grid-cols-9 gap-6">
+                                            {{-- ORTA: alt kategoriler + markalar --}}
+                                            <div class="col-span-6 flex flex-col">
+                                                <div class="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
+                                                    <span class="text-sm font-bold text-slate-900">{{ $cat['name'] }} Alt Kategorileri</span>
+                                                    <a href="{{ route('products.category', $cat['slug']) }}" class="text-xs font-medium text-teal-600 hover:underline">Tümünü Gör →</a>
+                                                </div>
+                                                <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
+                                                    @forelse($kids as $child)
+                                                        <a href="{{ route('products.category', $child['slug']) }}" class="flex items-center gap-1.5 text-xs text-slate-600 transition-all hover:font-semibold hover:text-teal-600">
+                                                            <span class="h-1 w-1 shrink-0 rounded-full bg-slate-300"></span>{{ $child['name'] }}
+                                                        </a>
+                                                    @empty
+                                                        <p class="col-span-2 text-xs leading-relaxed text-slate-500">{{ \Illuminate\Support\Str::limit($cat['summary'] ?? ($cat['name'] . ' kategorisindeki tüm modelleri marka ve teknik özellik bilgisiyle inceleyin.'), 170) }}</p>
+                                                        <a href="{{ route('products.category', $cat['slug']) }}" class="col-span-2 flex items-center gap-1.5 text-xs font-semibold text-teal-600 hover:underline">→ Tüm {{ $cat['name'] }} modelleri</a>
+                                                    @endforelse
+                                                </div>
+                                                @if($chips->isNotEmpty())
+                                                    <p class="mb-2 mt-4 text-xs font-bold uppercase tracking-wider text-slate-400">Öne Çıkan {{ $cat['name'] }} Markaları</p>
+                                                    <div class="flex flex-wrap gap-2">
+                                                        @foreach($chips as $b)
+                                                            <a href="{{ route('products.brand', $b['slug']) }}" class="cursor-pointer rounded-md border border-slate-200/80 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 transition-all hover:bg-teal-50 hover:text-teal-700">{{ $b['name'] }}</a>
+                                                        @endforeach
                                                     </div>
-                                                    <div class="mega-sub-grid">
-                                                        @forelse($kids as $child)
-                                                            <a href="{{ route('products.category', $child['slug']) }}">{{ $child['name'] }}</a>
-                                                        @empty
-                                                            <a href="{{ route('products.category', $cat['slug']) }}">Tüm {{ $cat['name'] }} modelleri</a>
-                                                        @endforelse
+                                                @endif
+                                            </div>
+
+                                            {{-- SAĞ: görselli öne çıkan kart --}}
+                                            <div class="col-span-3 flex flex-col justify-between rounded-xl border border-slate-200/60 bg-slate-50 p-4">
+                                                <div>
+                                                    <span class="inline-block rounded bg-teal-100 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-teal-700">Öne Çıkan Seri</span>
+                                                    <p class="mt-2 line-clamp-2 text-[13px] font-bold leading-snug text-slate-900">{{ $feat['name'] ?? ($cat['name'] . ' Serisi') }}</p>
+                                                    <div class="my-3 flex h-28 w-full items-center justify-center rounded-lg border border-slate-200/60 bg-white p-2">
+                                                        @if($feat && ! empty($feat['image']))
+                                                            <img src="{{ asset($feat['image']) }}" alt="{{ $feat['name'] }}" class="h-full w-full object-contain" loading="lazy">
+                                                        @elseif($chips->isNotEmpty() && ! empty($chips->first()['logo']))
+                                                            <img src="{{ asset($chips->first()['logo']) }}" alt="{{ $chips->first()['name'] }}" class="max-h-16 w-auto object-contain opacity-80" loading="lazy">
+                                                        @else
+                                                            <span class="text-slate-300 [&>svg]:h-10 [&>svg]:w-10">{!! $megaIcon($cat['name']) !!}</span>
+                                                        @endif
                                                     </div>
                                                 </div>
-                                                <a class="mega-promo" href="{{ route('products.category', $cat['slug']) }}">
-                                                    <div>
-                                                        <span class="mega-promo-kicker">Öne çıkan</span>
-                                                        <strong>{{ $cat['name'] }} kataloğu</strong>
-                                                        <p>{{ $cat['name'] }} serilerini teknik özellik ve marka bilgisiyle inceleyin.</p>
-                                                    </div>
-                                                    <span class="mega-promo-btn">Kataloğa git →</span>
-                                                </a>
+                                                <a href="{{ route('products.category', $cat['slug']) }}" class="block w-full rounded-lg bg-teal-600 py-2 text-center text-xs font-semibold text-white shadow-sm transition-all hover:bg-teal-700">Kataloğu &amp; Fiyatları İncele →</a>
                                             </div>
                                         </div>
                                     @endforeach
@@ -183,8 +227,10 @@
                             <div class="mega-grid mega-grid--svc">
                                 <aside class="mega-hero">
                                     <div>
+                                        <img src="{{ asset('images/services/mta-kalibrasyon-banner-10.webp') }}" alt="Akredite kalibrasyon laboratuvarı" class="mb-4 h-32 w-full rounded-lg object-cover" loading="lazy">
                                         <span class="mega-hero-badge">KALİBRASYON</span>
                                         <h3 class="mega-hero-title">İzlenebilir Kalibrasyon Güvencesi</h3>
+                                        <p class="mt-1 text-xs text-slate-400">TÜRKAK akreditasyon kapsamında, izlenebilir referanslarla sertifikalı ölçüm.</p>
                                     </div>
                                     <a class="mega-hero-btn" href="{{ route('quote', ['source_type' => 'service', 'source_name' => 'Kalibrasyon hizmeti']) }}">Teklif Al</a>
                                 </aside>
@@ -211,8 +257,10 @@
                             <div class="mega-grid mega-grid--svc">
                                 <aside class="mega-hero">
                                     <div>
+                                        <img src="{{ asset('images/technical-service/laboratuvar-cihazlari-teknik-servis.webp') }}" alt="Laboratuvar cihazları teknik servis" class="mb-4 h-32 w-full rounded-lg object-cover" loading="lazy">
                                         <span class="mega-hero-badge">BAKIM &amp; ONARIM</span>
                                         <h3 class="mega-hero-title">Yetkili Servis &amp; Teknik Destek</h3>
+                                        <p class="mt-1 text-xs text-slate-400">Arıza tespiti, bakım, onarım ve orijinal yedek parça ile 48 saatte müdahale.</p>
                                     </div>
                                     <a class="mega-hero-btn" href="{{ route('quote', ['source_type' => 'technical_service', 'source_name' => 'Teknik servis talebi']) }}">Servis Talebi Oluştur</a>
                                 </aside>

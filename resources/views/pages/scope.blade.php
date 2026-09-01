@@ -63,8 +63,8 @@
     </section>
 
     {{-- ============== SECTION 2 · STICKY CATEGORY TABS ============== --}}
-    <div data-scope-toolbar class="sticky top-[68px] z-30 -mx-4 mb-8 border-b border-slate-200 bg-slate-50/90 px-4 py-4 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <div class="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div data-scope-toolbar class="sticky top-[68px] z-30 -mx-4 mb-8 border-b border-slate-200 bg-slate-50/95 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div class="flex flex-wrap gap-1.5">
             <button type="button" data-scope-filter="all" class="scope-tab is-active">Tümü</button>
             @foreach($scopeCategories as $cat)
                 <button type="button" data-scope-filter="{{ $cat['slug'] }}" class="scope-tab">
