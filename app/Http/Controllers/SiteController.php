@@ -292,26 +292,83 @@ class SiteController extends Controller
     public function products(Request $request)
     {
         $productsSeo = $this->productsPageSeoContent();
-        $baseProducts = collect($this->productsData());
-        $brand = $request->query('brand');
-        $activeSpecs = $this->activeSpecFilters($request);
+        $all = collect($this->productsData());
 
-        if ($brand) {
-            $baseProducts = $baseProducts->where('brand_slug', $brand)->values();
+        $q = trim((string) $request->query('q', ''));
+        $selectedCats = array_values(array_filter((array) $request->query('kategori', [])));
+        $selectedBrands = array_values(array_filter((array) $request->query('marka', [])));
+        $selectedStatus = array_values(array_filter((array) $request->query('durum', [])));
+        // Geriye uyum: /urunler?brand=xxx
+        if ($legacyBrand = $request->query('brand')) {
+            $selectedBrands = array_values(array_unique([...$selectedBrands, $legacyBrand]));
+        }
+        $sort = (string) $request->query('sirala', 'onerilen');
+
+        $filtered = $all;
+
+        if ($q !== '') {
+            $needle = Str::lower($q);
+            $filtered = $filtered->filter(fn ($p) => str_contains(
+                Str::lower(($p['name'] ?? '') . ' ' . ($p['model'] ?? '') . ' ' . ($p['sku'] ?? '') . ' ' . ($p['brand'] ?? '') . ' ' . ($p['category'] ?? '')),
+                $needle,
+            ));
+        }
+        if ($selectedCats) {
+            $filtered = $filtered->whereIn('category_slug', $selectedCats);
+        }
+        if ($selectedBrands) {
+            $filtered = $filtered->whereIn('brand_slug', $selectedBrands);
+        }
+        if (in_array('turkak', $selectedStatus, true)) {
+            $filtered = $filtered->filter(fn ($p) => ! empty($p['related_services']));
+        }
+        if (in_array('gorselli', $selectedStatus, true)) {
+            $filtered = $filtered->filter(fn ($p) => ! empty($p['image']));
         }
 
-        $products = $this->applySpecFilters($baseProducts, $activeSpecs);
+        $filtered = match ($sort) {
+            'az' => $filtered->sortBy(fn ($p) => Str::lower($p['name'] ?? '')),
+            'za' => $filtered->sortByDesc(fn ($p) => Str::lower($p['name'] ?? '')),
+            'marka' => $filtered->sortBy(fn ($p) => Str::lower(($p['brand'] ?? 'zzz') . ' ' . ($p['name'] ?? ''))),
+            default => $filtered,
+        };
+        $filtered = $filtered->values();
+
+        $perPage = 24;
+        $page = max(1, (int) $request->query('sayfa', 1));
+        $total = $filtered->count();
+        $products = new \Illuminate\Pagination\LengthAwarePaginator(
+            $filtered->forPage($page, $perPage)->values(),
+            $total,
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'pageName' => 'sayfa', 'query' => $request->except('sayfa')],
+        );
 
         return view('pages.products', [
             'meta' => $this->meta($productsSeo['meta_title'], $productsSeo['meta_description']),
-            'products' => $products,
             'productsSeo' => $productsSeo,
-            'category' => null,
-            'brand' => $brand,
-            'categories' => $this->productCategories(),
+            'products' => $products,
+            'total' => $total,
+            'facetCategories' => $this->productCategories()
+                ->filter(fn ($c) => ($c['count'] ?? 0) > 0)
+                ->sortByDesc('count')
+                ->take(20)
+                ->values(),
+            'facetBrands' => $this->productBrands()
+                ->filter(fn ($b) => ($b['count'] ?? 0) > 0)
+                ->sortByDesc('count')
+                ->values(),
             'brands' => $this->productBrands(),
-            'specFilters' => $this->productSpecFilters($baseProducts, $activeSpecs),
-            'activeSpecFilters' => $activeSpecs,
+            'filters' => [
+                'q' => $q,
+                'kategori' => $selectedCats,
+                'marka' => $selectedBrands,
+                'durum' => $selectedStatus,
+                'sirala' => $sort,
+            ],
+            'hasActiveFilters' => $q !== '' || $selectedCats || $selectedBrands || $selectedStatus,
+            'genericQuoteCta' => $this->quoteCta('product', null, 'Ürün kataloğu', route('products.index')),
             'schema' => $this->schemaGraph([
                 $this->webPageSchema($productsSeo['meta_title'], $productsSeo['meta_description']),
                 $this->breadcrumbSchema([

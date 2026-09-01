@@ -25,12 +25,31 @@ function setupProductMega() {
     });
 }
 
+function setupCatalogPage() {
+    document.querySelectorAll('[data-catalog-filter]').forEach((form) => {
+        form.querySelectorAll('input[type="checkbox"]').forEach((cb) =>
+            cb.addEventListener('change', () => form.submit()));
+    });
+    document.querySelectorAll('[data-catalog-sort]').forEach((form) => {
+        form.querySelector('select')?.addEventListener('change', () => form.submit());
+    });
+    const search = document.querySelector('[data-catalog-search]');
+    if (search && search.form) {
+        let t;
+        search.addEventListener('input', () => {
+            clearTimeout(t);
+            t = setTimeout(() => search.form.submit(), 500);
+        });
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     setupCatalog();
     setupPdp();
     setupHeader();
     setupScope();
     setupProductMega();
+    setupCatalogPage();
 
     const megaItems = Array.from(document.querySelectorAll('.mega-nav-item'));
     const hoverPointer = window.matchMedia('(hover: hover) and (pointer: fine)');

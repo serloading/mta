@@ -319,16 +319,12 @@ class AdminPanelTest extends TestCase
             'published_at' => now(),
         ]);
 
+        // /urunler artık filtreli ürün kataloğu: marka logo ribbon + ürün kartları
         $this->get('/urunler')
             ->assertOk()
-            ->assertSee('storage/media/categories/admin-teraziler.webp', false)
+            ->assertSee('Tüm Ürün Kataloğu')
             ->assertSee('storage/media/brands/admin-and.webp', false)
-            ->assertSee('Kategorileri İncele')
-            ->assertSee('href="#markalar"', false)
-            ->assertSee('<a class="content-card category-card taxonomy-card taxonomy-card--category"', false)
-            ->assertSee('<a class="content-card category-card taxonomy-card taxonomy-card--brand"', false)
-            ->assertDontSee('<div class="taxonomy-stats">', false)
-            ->assertDontSee('Admin marka özeti.</p>\n                <small>', false);
+            ->assertSee('Görsel Test Ürünü');
 
         $this->get('/urunler/teraziler')
             ->assertOk()
