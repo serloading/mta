@@ -40,6 +40,8 @@ class SeoEntryResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'SEO';
 
+    protected static ?int $navigationSort = 10;
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([

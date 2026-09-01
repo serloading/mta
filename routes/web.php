@@ -26,6 +26,9 @@ Route::post('/teklif-al', [SiteController::class, 'submitLead'])->middleware('th
 Route::get('/iletisim', [SiteController::class, 'contact'])->name('contact');
 Route::post('/iletisim', [SiteController::class, 'submitLead'])->middleware('throttle:6,1')->name('leads.store');
 Route::get('/ara', [SiteController::class, 'search'])->name('search');
+Route::get('/gizlilik-politikasi', [SiteController::class, 'legal'])->defaults('slug', 'gizlilik-politikasi')->name('legal.privacy');
+Route::get('/cerez-politikasi', [SiteController::class, 'legal'])->defaults('slug', 'cerez-politikasi')->name('legal.cookies');
+Route::get('/kvkk', [SiteController::class, 'legal'])->defaults('slug', 'kvkk')->name('legal.kvkk');
 Route::get('/robots.txt', [SiteController::class, 'robots'])->name('robots');
 Route::get('/sitemap.xml', [SiteController::class, 'sitemap'])->name('sitemap');
 Route::get('/{any}', [SiteController::class, 'redirectFallback'])->where('any', '.*')->name('redirects.fallback');

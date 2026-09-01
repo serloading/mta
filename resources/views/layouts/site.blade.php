@@ -82,8 +82,8 @@
     <div class="main-bar">
         <div class="container main-bar-inner">
             <a class="mb-logo" href="{{ route('home') }}" aria-label="MTA Endüstri ana sayfa">
-                <img src="{{ asset('mta-logo.png') }}" width="56" height="44" alt="MTA Endüstri logosu">
-                <span class="mb-logo-text"><strong>MTA Endüstri</strong><small>Kalibrasyon &amp; teknik ürünler</small></span>
+                <img src="{{ asset('mta-logo.png') }}" width="74" height="58" alt="MTA Endüstri logosu">
+                <span class="mb-logo-text"><strong>MTA Endüstri</strong><small>Akredite Kalibrasyon Hizmeti</small></span>
             </a>
 
             <form class="mb-search" action="{{ route('search') }}" method="get" role="search" data-search>
@@ -411,10 +411,9 @@
         <div class="container ft-bottom-shell">
             <span>© {{ date('Y') }} MTA Endüstri. Tüm hakları saklıdır.</span>
             <nav class="ft-legal" aria-label="Yasal">
-                <a href="{{ route('contact') }}">KVKK Aydınlatma Metni</a>
-                <a href="{{ route('contact') }}">Gizlilik Politikası</a>
-                <a href="{{ route('contact') }}">Çerez Politikası</a>
-                <a href="{{ route('contact') }}">Kullanım Koşulları</a>
+                <a href="{{ route('legal.kvkk') }}">KVKK Aydınlatma Metni</a>
+                <a href="{{ route('legal.privacy') }}">Gizlilik Politikası</a>
+                <a href="{{ route('legal.cookies') }}">Çerez Politikası</a>
             </nav>
         </div>
     </div>

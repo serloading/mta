@@ -38,6 +38,8 @@ class UserResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Güvenlik';
 
+    protected static ?int $navigationSort = 10;
+
     public static function canAccess(): bool
     {
         return auth()->user()?->isAdmin() ?? false;

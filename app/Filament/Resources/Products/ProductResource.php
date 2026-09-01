@@ -53,6 +53,8 @@ class ProductResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Katalog';
 
+    protected static ?int $navigationSort = 10;
+
     /**
      * Keep the admin-chosen file name (slugified, lower-case) instead of a random hash,
      * so a file uploaded as "shimadzu-moc-63u.jpg" stays at that path.

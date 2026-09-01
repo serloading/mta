@@ -36,6 +36,8 @@ class MediaAssetResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'İçerik';
 
+    protected static ?int $navigationSort = 50;
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([

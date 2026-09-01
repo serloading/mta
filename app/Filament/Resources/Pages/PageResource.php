@@ -38,6 +38,8 @@ class PageResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'İçerik';
 
+    protected static ?int $navigationSort = 10;
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([

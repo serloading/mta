@@ -665,6 +665,34 @@ class SiteController extends Controller
         return $this->staticPage('references');
     }
 
+    public function legal(string $slug)
+    {
+        $page = config('mta-legal.' . $slug);
+        abort_unless(is_array($page), 404);
+
+        $metaTitle = $page['title'] . ' | MTA Endüstri';
+        $metaDescription = Str::limit(trim(strip_tags($page['lead'] ?? $page['title'])), 155);
+
+        $legalPages = collect(config('mta-legal', []))
+            ->map(fn ($p, $s) => ['slug' => $s, 'title' => $p['title']])
+            ->values()
+            ->all();
+
+        return view('pages.legal', [
+            'meta' => $this->meta($metaTitle, $metaDescription),
+            'legal' => $page,
+            'legalSlug' => $slug,
+            'legalPages' => $legalPages,
+            'schema' => $this->schemaGraph([
+                $this->webPageSchema($metaTitle, $metaDescription),
+                $this->breadcrumbSchema([
+                    ['name' => 'Ana Sayfa', 'url' => route('home')],
+                    ['name' => $page['title'], 'url' => url()->current()],
+                ]),
+            ]),
+        ]);
+    }
+
     public function contact()
     {
         return $this->staticPage('contact', [
