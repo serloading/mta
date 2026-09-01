@@ -1,0 +1,26 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament';
+@source '../../../../resources/views/filament';
+
+/* ============================================================
+   MTA admin panel overrides
+   ============================================================ */
+
+/* Solid primary & success buttons: strong green background + white label.
+   (Filament v4 defaults these to a pale tint with dark text — low contrast.) */
+:is(.fi-color-primary, .fi-color-success)[class*='fi-bg-color-'] {
+    --bg: var(--color-600);
+    --text: #fff;
+}
+
+:is(.fi-color-primary, .fi-color-success)[class*='fi-bg-color-']:hover {
+    --bg: var(--color-700);
+}
+
+/* Compact "Uzun açıklama" rich editor (~3 satır) */
+.fi-fo-rich-editor .tiptap.ProseMirror,
+.fi-fo-rich-editor .fi-fo-rich-editor-content {
+    min-height: 5rem;
+    max-height: 24rem;
+}
