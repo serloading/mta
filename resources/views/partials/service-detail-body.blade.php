@@ -203,9 +203,9 @@
                 @foreach($relatedProducts as $p)
                     <a href="{{ route('products.show', $p['slug']) }}"
                        class="group flex flex-col rounded-xl border border-slate-200 bg-white p-3 transition-all hover:border-teal-500 hover:shadow-lg">
-                        <div class="flex h-28 items-center justify-center overflow-hidden rounded-lg bg-slate-50 p-2">
+                        <div class="flex h-28 items-center justify-center overflow-hidden rounded-lg border border-slate-100 bg-white p-3">
                             @if(! empty($p['image']))
-                                <img src="{{ asset($p['image']) }}" alt="{{ $p['image_alt'] ?? $p['name'] }}" class="h-full w-full object-contain" loading="lazy">
+                                <img src="{{ asset($p['image']) }}" alt="{{ $p['image_alt'] ?? $p['name'] }}" class="h-auto max-h-full w-auto max-w-full object-contain" loading="lazy">
                             @else
                                 <svg class="h-9 w-9 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="13" r="3"/></svg>
                             @endif

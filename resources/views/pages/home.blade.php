@@ -152,9 +152,9 @@
             @foreach($featuredCategories as $cat)
                 <a href="{{ $cat['url'] }}"
                    class="group flex cursor-pointer flex-col items-center rounded-2xl border border-slate-200 bg-white p-4 text-center transition-all hover:border-teal-500 hover:shadow-lg">
-                    <div class="flex h-20 w-20 items-center justify-center rounded-xl bg-white">
+                    <div class="flex h-20 w-20 items-center justify-center rounded-xl bg-white p-1.5">
                         @if(! empty($cat['image']))
-                            <img src="{{ asset($cat['image']) }}" alt="{{ $cat['name'] }}" class="h-20 w-20 object-contain" loading="lazy">
+                            <img src="{{ asset($cat['image']) }}" alt="{{ $cat['name'] }}" class="h-auto max-h-full w-auto max-w-full object-contain" loading="lazy">
                         @else
                             <svg class="h-9 w-9 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 8-9-5-9 5v8l9 5 9-5z"/><path d="m3.3 7.5 8.7 5 8.7-5"/><path d="M12 12.5V22"/></svg>
                         @endif

@@ -146,14 +146,14 @@
                         <a href="{{ route('products.show', $p['slug']) }}" data-card data-name="{{ $p['name'] }}"
                            class="catalog-card group flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 transition-all hover:border-teal-500 hover:shadow-lg">
                             <div class="catalog-card-body">
-                                <div class="catalog-card-media relative mb-3 flex h-48 w-full items-center justify-center overflow-hidden rounded-lg bg-slate-50 p-3">
+                                <div class="catalog-card-media relative mb-3 flex h-48 w-full items-center justify-center overflow-hidden rounded-lg border border-slate-100 bg-white p-5">
                                     @if(! empty($p['image']))
-                                        <img src="{{ asset($p['image']) }}" alt="{{ $p['image_alt'] ?? $p['name'] }}" class="h-full w-full object-contain" loading="lazy">
+                                        <img src="{{ asset($p['image']) }}" alt="{{ $p['image_alt'] ?? $p['name'] }}" class="h-auto max-h-full w-auto max-w-full object-contain" loading="lazy">
                                     @else
                                         {!! $deviceIcon !!}
                                     @endif
                                     @if(! empty($p['related_services']))
-                                        <span class="absolute left-2 top-2 rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Kalibrasyonlu</span>
+                                        <span class="absolute right-2 top-2 rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 shadow-sm">Kalibrasyonlu</span>
                                     @endif
                                 </div>
                                 <p class="text-[11px] font-bold uppercase tracking-wider text-teal-700">{{ trim(($p['brand'] ?? '') . (($p['brand'] ?? '') && ($p['category'] ?? '') ? ' | ' : '') . ($p['category'] ?? ''), ' |') }}</p>

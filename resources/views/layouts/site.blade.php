@@ -142,79 +142,70 @@
             <nav class="mb-nav desktop-nav" aria-label="Ana navigasyon">
                 <div class="mega-nav-item">
                     <a class="mega-trigger" href="{{ route('products.index') }}" aria-haspopup="true" aria-expanded="false" data-mega-trigger>Ürünler {!! $mi['cdown'] !!}</a>
-                    <div class="mega-menu mega-menu--products" data-product-mega>
-                        <div class="mega-panel">
-                            <div class="grid grid-cols-12 gap-0">
-                                {{-- SOL: ana kategoriler --}}
-                                <div class="col-span-3 border-r border-slate-100 pr-3">
-                                    <div class="mega-scroll max-h-[440px] space-y-0.5 overflow-y-auto pr-1">
-                                        @foreach($megaRootCats as $i => $cat)
-                                            <button type="button" data-mega-cat="{{ $cat['slug'] }}"
-                                                aria-selected="{{ $i === 0 ? 'true' : 'false' }}"
-                                                class="group/mc flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-[13px] font-semibold text-slate-700 transition-all hover:bg-teal-50 hover:text-teal-700 aria-selected:bg-teal-50 aria-selected:text-teal-700">
-                                                <span class="flex items-center gap-2">
-                                                    <span class="shrink-0 text-slate-400 group-hover/mc:text-teal-600 group-aria-selected/mc:text-teal-600 [&>svg]:h-4 [&>svg]:w-4">{!! $megaIcon($cat['name']) !!}</span>
-                                                    {{ $cat['name'] }}
-                                                </span>
-                                                <svg class="h-3.5 w-3.5 shrink-0 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
-                                            </button>
-                                        @endforeach
-                                    </div>
+                    <div class="mega-menu mega-menu--products !border-t-0 !bg-transparent !shadow-none" data-product-mega>
+                        <div class="mx-auto mt-1 flex max-h-[380px] w-full max-w-[1320px] flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-2xl">
+                            <div class="grid min-h-0 flex-1 grid-cols-12">
+                                {{-- SOL: kategoriler — 2 kolon kompakt grid, scroll YOK --}}
+                                <div class="col-span-4 grid grid-cols-2 content-start gap-1 overflow-hidden border-r border-slate-200 bg-slate-50/80 p-3">
+                                    @foreach($megaRootCats as $i => $cat)
+                                        <button type="button" data-mega-cat="{{ $cat['slug'] }}" aria-selected="{{ $i === 0 ? 'true' : 'false' }}"
+                                            class="group/mc flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold text-slate-700 transition-colors hover:bg-teal-700 hover:text-white aria-selected:bg-teal-700 aria-selected:font-bold aria-selected:text-white aria-selected:shadow-sm">
+                                            <span class="shrink-0 text-slate-400 group-hover/mc:text-white group-aria-selected/mc:text-white [&>svg]:h-3.5 [&>svg]:w-3.5">{!! $megaIcon($cat['name']) !!}</span>
+                                            <span class="truncate">{{ $cat['name'] }}</span>
+                                        </button>
+                                    @endforeach
                                 </div>
 
-                                {{-- SAĞ: kategoriye göre değişen panel --}}
-                                <div class="col-span-9 pl-6">
+                                {{-- SAĞ: orta (alt kategori) + promo kartı --}}
+                                <div class="col-span-8">
                                     @foreach($megaRootCats as $i => $cat)
                                         @php($kids = $megaChildrenBy->get($cat['slug'], collect()))
-                                        @php($chips = $megaBrandChips($cat['slug']))
                                         @php($feat = $megaFeatureProducts[$cat['slug']] ?? ($kids->isNotEmpty() ? ($megaFeatureProducts[$kids->first()['slug']] ?? null) : null))
-                                        <div data-mega-panel="{{ $cat['slug'] }}" class="{{ $i === 0 ? 'grid' : 'hidden' }} grid-cols-9 gap-6">
-                                            {{-- ORTA: alt kategoriler + markalar --}}
-                                            <div class="col-span-6 flex flex-col">
+                                        <div data-mega-panel="{{ $cat['slug'] }}" class="{{ $i === 0 ? 'grid' : 'hidden' }} h-full grid-cols-8">
+                                            {{-- ORTA: alt kategoriler --}}
+                                            <div class="col-span-6 flex flex-col p-5">
                                                 <div class="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
-                                                    <span class="text-sm font-bold text-slate-900">{{ $cat['name'] }} Alt Kategorileri</span>
+                                                    <span class="text-sm font-bold text-slate-900">{{ $cat['name'] }}</span>
                                                     <a href="{{ route('products.category', $cat['slug']) }}" class="text-xs font-medium text-teal-600 hover:underline">Tümünü Gör →</a>
                                                 </div>
-                                                <div class="grid grid-cols-2 gap-x-6 gap-y-2.5">
-                                                    @forelse($kids as $child)
-                                                        <a href="{{ route('products.category', $child['slug']) }}" class="flex items-center gap-1.5 text-xs text-slate-600 transition-all hover:font-semibold hover:text-teal-600">
-                                                            <span class="h-1 w-1 shrink-0 rounded-full bg-slate-300"></span>{{ $child['name'] }}
+                                                <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                                                    @forelse($kids->take(12) as $child)
+                                                        <a href="{{ route('products.category', $child['slug']) }}" class="flex items-center gap-1.5 text-xs text-slate-600 transition-all hover:font-semibold hover:text-teal-700">
+                                                            <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500/40"></span>{{ $child['name'] }}
                                                         </a>
                                                     @empty
-                                                        <p class="col-span-2 text-xs leading-relaxed text-slate-500">{{ \Illuminate\Support\Str::limit($cat['summary'] ?? ($cat['name'] . ' kategorisindeki tüm modelleri marka ve teknik özellik bilgisiyle inceleyin.'), 170) }}</p>
-                                                        <a href="{{ route('products.category', $cat['slug']) }}" class="col-span-2 flex items-center gap-1.5 text-xs font-semibold text-teal-600 hover:underline">→ Tüm {{ $cat['name'] }} modelleri</a>
+                                                        <a href="{{ route('products.category', $cat['slug']) }}" class="col-span-2 flex items-center gap-1.5 text-xs font-semibold text-teal-700 hover:underline">
+                                                            <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500/40"></span>Tüm {{ $cat['name'] }} modelleri →
+                                                        </a>
                                                     @endforelse
                                                 </div>
-                                                @if($chips->isNotEmpty())
-                                                    <p class="mb-2 mt-4 text-xs font-bold uppercase tracking-wider text-slate-400">Öne Çıkan {{ $cat['name'] }} Markaları</p>
-                                                    <div class="flex flex-wrap gap-2">
-                                                        @foreach($chips as $b)
-                                                            <a href="{{ route('products.brand', $b['slug']) }}" class="cursor-pointer rounded-md border border-slate-200/80 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 transition-all hover:bg-teal-50 hover:text-teal-700">{{ $b['name'] }}</a>
-                                                        @endforeach
-                                                    </div>
-                                                @endif
                                             </div>
 
-                                            {{-- SAĞ: görselli öne çıkan kart --}}
-                                            <div class="col-span-3 flex flex-col justify-between rounded-xl border border-slate-200/60 bg-slate-50 p-4">
+                                            {{-- SAĞ: tek öne çıkan ürün kartı --}}
+                                            <div class="col-span-2 flex flex-col justify-between border-l border-slate-100 bg-slate-50 p-3">
                                                 <div>
-                                                    <span class="inline-block rounded bg-teal-100 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-teal-700">Öne Çıkan Seri</span>
-                                                    <p class="mt-2 line-clamp-2 text-[13px] font-bold leading-snug text-slate-900">{{ $feat['name'] ?? ($cat['name'] . ' Serisi') }}</p>
-                                                    <div class="my-3 flex h-28 w-full items-center justify-center rounded-lg border border-slate-200/60 bg-white p-2">
-                                                        @if($feat && ! empty($feat['image']))
-                                                            <img src="{{ asset($feat['image']) }}" alt="{{ $feat['name'] }}" class="h-full w-full object-contain" loading="lazy">
-                                                        @elseif($chips->isNotEmpty() && ! empty($chips->first()['logo']))
-                                                            <img src="{{ asset($chips->first()['logo']) }}" alt="{{ $chips->first()['name'] }}" class="max-h-16 w-auto object-contain opacity-80" loading="lazy">
-                                                        @else
-                                                            <span class="text-slate-300 [&>svg]:h-10 [&>svg]:w-10">{!! $megaIcon($cat['name']) !!}</span>
-                                                        @endif
-                                                    </div>
+                                                    <p class="line-clamp-2 text-[11px] font-bold leading-snug text-slate-900">{{ $feat['name'] ?? ($cat['name'] . ' serisi') }}</p>
+                                                    @if($feat && ! empty($feat['image']))
+                                                        <img src="{{ asset($feat['image']) }}" alt="{{ $feat['name'] }}" class="mx-auto my-2 h-28 object-contain mix-blend-multiply" loading="lazy">
+                                                    @else
+                                                        <span class="mx-auto my-2 flex h-28 items-center justify-center text-slate-300 [&>svg]:h-10 [&>svg]:w-10">{!! $megaIcon($cat['name']) !!}</span>
+                                                    @endif
                                                 </div>
-                                                <a href="{{ route('products.category', $cat['slug']) }}" class="block w-full rounded-lg bg-teal-600 py-2 text-center text-xs font-semibold text-white shadow-sm transition-all hover:bg-teal-700">Kataloğu &amp; Fiyatları İncele →</a>
+                                                <a href="{{ route('products.category', $cat['slug']) }}" class="block w-full rounded-lg bg-teal-700 py-2 text-center text-[11px] font-bold text-white shadow-sm transition-colors hover:bg-teal-600">Katalog &amp; Fiyatlar</a>
                                             </div>
                                         </div>
                                     @endforeach
                                 </div>
+                            </div>
+
+                            {{-- ALT ŞERİT: öne çıkan markalar --}}
+                            <div class="flex items-center justify-between gap-3 border-t border-slate-200 bg-slate-100/70 px-4 py-1.5 text-[11px] text-slate-500">
+                                <span class="shrink-0 font-medium">Öne Çıkan Markalar:</span>
+                                <span class="flex flex-wrap items-center justify-end gap-x-3 gap-y-0.5">
+                                    @foreach(['shimadzu' => 'Shimadzu', 'weightlab' => 'Weightlab', 'velp' => 'Velp', 'and' => 'A&D', 'ohaus' => 'Ohaus'] as $bslug => $bname)
+                                        <a href="{{ route('products.brand', $bslug) }}" class="transition-colors hover:text-teal-700">{{ $bname }}</a>
+                                    @endforeach
+                                </span>
                             </div>
                         </div>
                     </div>
