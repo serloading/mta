@@ -2538,19 +2538,24 @@ Eski parçalı SEO metin blokları (`credential-band`, `lab-section`, `sector-gr
 - Yerelde (curl + DOM): katalog `?q`/`?kategori[]`/`?sirala`/`?sayfa` sunucu tarafı çalışıyor; checkbox auto-submit + grid/list toggle + debounce arama JS bağlı; Kapsam rayı tıklama → filtre + scroll, scrollspy, arama, yatay taşma yok.
 - **Deploy:** `395587b` (katalog) + `1b10e0e` (kapsam rayı) → `demo.mtaend.com`: `git pull` + `public/build` scp + `optimize:clear` + `view/config/route:cache` + `filament:optimize`. `/urunler` 200 (451 ürün, `?kategori[]=hot-plate`→4), `/kapsam` 200 (rail).
 
-## YAPILACAKLAR (yeni sohbette devam)
+## 2026-09-02 (3) — Kalibrasyon + Teknik Servis Detay Sayfaları
 
-Aşağıdaki iş bu turda **yapılmadı** — kullanıcı ayrıntılı tasarım brief'i verdi, odaklı bir tur gerektirir:
+`resources/views/pages/service-detail.blade.php` + `technical-service-detail.blade.php` **ince wrapper**'a indirgendi; ikisi de yeni `partials/service-detail-body.blade.php`'yi `@include` eder (`kind` = `calibration` | `technical`).
 
-### 1. Kalibrasyon / Teknik Servis Hizmet Detay sayfası yeniden tasarımı
-`resources/views/pages/service-detail.blade.php` ve `technical-service-detail.blade.php`. Brief özeti:
-- **A. Hero:** `#0F172A` dark, `radius 0 0 24px 24px`, `grid lg:grid-cols-12`. Sol (`col-7`): mono eyebrow badge ("TÜRKAK AKREDİTE KALİBRASYON LAB"), H1, alt metin, 3 güven rozeti (TÜRKAK / ISO 17025 / Hızlı Sertifika). Sağ (`col-5`): beyaz **sabit hızlı teklif formu kartı** (Cihaz Tipi/Adedi, Firma, Telefon/E-posta + "Hızlı Kalibrasyon Teklifi Al" teal buton). **Stok insan fotoğrafları kaldırılacak.**
-- **B. Ölçüm kapsamı:** ham `<table>` yerine **aranabilir data-rich tablo** — üstte "Cihaz veya model ara…" input filtresi. Kolonlar: Cihaz/Donanım Tipi | Ölçüm Aralığı | Belirsizlik/Tolerans | Akreditasyon Durumu (emerald "TÜRKAK Kapsamında" tag) | Aksiyon ("Kapsam İçin Teklif İste"). Veri: `config/mta.php -> services[*].scope_groups`.
-- **C. 5 adımlı yatay süreç akışı:** `grid md:grid-cols-5`, aralarda ok. 01 Cihaz Kabul → 02 Ön İnceleme → 03 Ölçüm & Analiz → 04 Sertifikalandırma → 05 Teslimat. Dikey alakasız kutular kaldırılacak.
-- **D.** Minimal SSS akordiyonu (`max-w-3xl`) + 2'li ilişkili hizmet/bakım-onarım kartı.
-- **E.** Dark navy alt banner — **tek buton** ("Listeni Yükle / Teklif Al").
-- Tokens: Teal-700 primary, `#0F172A` dark, Amber-600 accent badge, Slate paleti. Çizgi ikonlar (1.5px stroke).
-- Not: Ana Sayfa ve Kapsam sayfaları 2026-09-02'de Tailwind ile bu dile geçirildi; hizmet/teknik servis detay bu turda aynı token seti + `pages/home.blade.php` / `pages/scope.blade.php` referans alınarak yapılabilir.
+Bölümler (Tailwind, mevcut token seti):
+1. **Dark split hero** (`bg-slate-900 rounded-3xl`, `lg:grid-cols-12`): sol `col-7` eyebrow badge ("TÜRKAK AKREDİTE / ISO 17025 İZLENEBİLİR") + H1 + subtitle + 3 güven rozeti; sağ `col-5` **beyaz hızlı talep formu kartı** (Cihaz tipi/adedi → `message`, Firma/Yetkili → `name`, Telefon → `phone`, E-posta → `email`; honeypot `website`; hidden `source_type` + `service`/`technical_service` slug + `source_name`). POST `route('leads.store')` → `submitLead` → `session('lead_success')` varsa kartta yeşil onay. WhatsApp linki de var.
+2. **2 bilgilendirme kartı** (Hangi durumlarda gerekli? / Hazırlık süreci) — SEO paragraf yığınları kaldırıldı. Metin `kind`'e göre "Kalibrasyon" / "Servis".
+3. **Kapsam tablosu**: `Cihaz Tipi | Ölçüm Aralığı | Standart/Tolerans | Hizmet Türü (emerald "TÜRKAK Kapsamında"/"Yetkili Servis" tag) | Aksiyon ("Bu Cihaz İçin Teklif Al →")`. Veri: kalibrasyonda `$service['scope_groups']` (`[{title, items:[{name,range}]}]`), teknik serviste `$technicalService['devices']` satırları. `hover:bg-slate-50`.
+4. **5 adımlı yatay timeline** (`md:grid-cols-5` + absolute connector çizgi): 01 Cihaz Kabul → 02 Ön İnceleme → 03 Ölçüm & Analiz / Bakım & Onarım → 04 Kalibrasyon & Sertifikalandırma → 05 Güvenli Teslimat. Eski 7-adım-2-satır yapısı gitti.
+5. **İlişkili cihazlar** grid (`grid-cols-2 md:grid-cols-4`) — `$products` (controller'ın related_products çözümü) varsa; yoksa bölüm gizli.
+6. **Minimal SSS akordiyonu** (`max-w-3xl`) — `serviceSeo['faq']`.
+7. **Tek aksiyonlu dark alt CTA** — `serviceSeo['cta']` başlık/not + "Toplu Kalibrasyon/Servis Teklifi Al".
+
+### Doğrulama
+- `php artisan test` 13/13. 5 detay sayfası (3 kalibrasyon + 2 teknik servis) → 200, konsol temiz.
+- Hero formu uçtan uca test edildi: submit → `/iletisim` POST → flash → sayfa yeniden yüklenince kartta "Talebiniz alındı" onayı.
+- `sicaklik-kalibrasyonu`: 36 satırlık kapsam tablosu + 5 adım + 4 cross-sell ürün; `basinc`: tablo + adımlar (cross-sell yok → bölüm gizli). Yatay taşma yok.
+- **Deploy:** commit `5988280` → `demo.mtaend.com`: `git pull` + `public/build` scp + `optimize:clear` + `view/config/route:cache` + `filament:optimize`. 3 örnek sayfa 200.
 
 ### Genel notlar (yeni sohbet için)
 - `php artisan serve` port 8000'de zaten çalışıyor (kullanıcının terminali). Cache'ler: geliştirme için `view:cache` yapılmadı (blade hot-reload); `filament:optimize` aktif tutulmalı.
