@@ -2360,3 +2360,102 @@ php artisan storage:link
 ```
 
 mutlaka çalıştırılmalı. Bazı paylaşımlı hostinglerde shell/symlink izni kısıtlı olabilir; böyle durumda cPanel dosya yöneticisinden manuel symlink oluşturmak ya da hosting desteğinden izin istemek gerekir. Bu adım atlanırsa admin panelinden yüklenen **tüm** görsel/doküman/OG görselleri canlıda kırık çıkar (WordPress importundan gelen `public/images/products/...` altındaki statik görselleri etkilemez, onlar zaten symlink'e bağımlı değil).
+
+## 2026-09-01 — Büyük UI Revizyonu (Katalog + PDP + Header + Footer + Mega Menü) + GitHub
+
+Uzun bir tur boyunca ön yüzün önemli bölümleri kurumsal B2B/e-ticaret standartlarına göre yeniden tasarlandı. Tüm çalışma **`github.com/serloading/mta`** deposuna (public) push edildi — ilk commit `c38eef2`, dal `main`. 13/13 test geçiyor.
+
+### Tasarım sistemi yaklaşımı
+
+Her yeni bölüm **kendi CSS namespace'i** içinde (`.catalog-ui` / `.pdp-ui` / `.catalog-lower` / `.ft-*` / header `.mb-*` `.top-bar`) — sitenin geri kalan Poppins/teal sistemi bozulmadı. Ortak token: Inter font, Sky-600 `#0284C7` (katalog primary), Teal-700 `#0F766E` / Teal-600 `#0D9488` (PDP + header + kurumsal), Amber-600 `#D97706` (PDP CTA), Slate paleti, `#0F172A` dark surface.
+
+### A. Global container hizalaması
+
+`--site-container` `1180px → 1320px`. `.container` artık `max-width: 1320px; margin-inline:auto; padding-inline: 1rem/1.5rem/2rem` (`.cui-shell` ile birebir). `.header-shell`/`.top-header-shell` kendi `width` override'ları kaldırıldı. `.pdp-shell`/`.pdp-tabs`/`.pdp-panels` `1280→1320`, `.clower-shell` `1180→1320`. Sonuç: header, breadcrumb, hero, filtre paneli, ürün grid'i, alt bölümler, footer içerikleri **1440px'de sol 85 / sağ 1341** ile aynı hizada. Ortalanmış bölüm başlıkları (`.section-header.centered`) bilinçli olarak dar bırakıldı.
+
+### B. Katalog liste / kategori / marka sayfaları — `resources/views/pages/product-{category,brand}.blade.php`
+
+- **`.catalog-ui`** scoped sistem (`resources/css/app.css` sonunda). Yeni partial'lar: `partials/catalog-filters.blade.php`, `partials/catalog-product-card.blade.php`, `partials/catalog-results.blade.php`, `partials/catalog-lower.blade.php`. JS: `resources/js/catalog.js` (grid/list toggle + localStorage, client-side A-Z sıralama, mobil off-canvas filtre drawer).
+- **Hero:** breadcrumb bar → logo kutusu (168×100) + H1 + güven chip'leri + açıklama + **2 CTA butonu** ("{Marka/Kategori} Kalibrasyon Hizmeti Al" + "Detaylı Bilgi Al"). Eski kalabalık kategori/marka chip satırı kaldırıldı.
+- **2 kolon:** sticky sol filtre paneli (`.cui-panel`, adet/`(N)` rozetleri KALDIRILDI) + sağ toolbar (ürün sayısı + sıralama + grid/list) + `md:2 / xl:3` ürün grid.
+- **Ürün kartı:** "Teklife Açık" rozeti YOK, "Teklif Alın" etiketi YOK. Marka · Kategori satırı (ikisi de tıklanabilir link), görsel + başlık + tam genişlik "İncele" butonu (hepsi ürüne gider). Buton yazısı beyaz (`.catalog-ui a:not(.cui-btn):not(.cui-chip)` reset).
+- **Alt bölümler (`.catalog-lower` / `.clower-*`):** parçalı kutu yığını → 5 blok: A) tek "Teknik Alım & Seçim Rehberi" (sol intro + 3 numaralı adım), B) "İlgili Ürün Grupları" minimal chip'ler, C) (kategori sayfası) grayscale→renkli marka logo kartları, D) modern minimal SSS akordiyonu, E) **tek butonlu** dark CTA banner.
+
+### C. Ürün detay sayfası (PDP) — `resources/views/pages/product-detail.blade.php`
+
+- **`.pdp-ui`** scoped sistem. JS: `resources/js/pdp.js` (galeri thumb değişimi, lightbox, sekmeler — ok tuşları + `#hash` deep-link).
+- **Buy box (`lg:grid 5/7`):** sol media stage (`aspect-square`, zoom → lightbox) + thumb şeridi (`product-gallery-strip` class korundu — test bağımlı). Sağ: breadcrumb → **marka logo + adı** chip'i (tıklanır, marka sayfasına) → H1 (28/22px) → 3'lü "Quick Key Specs" mini-grid → **teal cross-sell kutusu** (`kalibrasyon` checkbox'ı quote form'a taşınır) → action bar: **hayalet** "Ürün İçin Teklif Al" + WhatsApp yeşili `#25D366` "WhatsApp ile Bilgi Al" + outline "Kataloğu İncele" (yalnızca doküman varsa).
+- **Sticky tab bar:** Genel Bakış / Teknik Özellikler / Doküman & Video / SSS & Destek. **"Doküman & Video" sekmesi ve "Kataloğu İncele" butonu, üründe hiç doküman VE video yoksa hiç render edilmez.** JS yoksa tüm paneller açık (SEO-safe).
+- **Alt banner:** ürüne özel başlık/metin ("{Ürün adı} için teklif alın"), hayalet Teklif + WhatsApp yeşil.
+
+### D. Footer — `resources/views/layouts/site.blade.php` + `.ft-*`
+
+5 sütunlu grid (`#0F172A`): Marka (logo + slogan + TÜRKAK/ISO 17025 rozetleri + sosyal) │ HİZMETLER │ KATEGORİLER │ TEKNİK SERVİS │ İLETİŞİM (ikon'lu adres/tel/mail + tam genişlik "Teklif Formuna Git" teal buton). Alt şerit `#020617`: "© 2026 MTA Endüstri…" + 4 yasal link (KVKK/Gizlilik/Çerez/Kullanım — **şu an hepsi `/iletisim`'e gidiyor, gerçek sayfalar yapılınca güncellenmeli**). "SEO-first Laravel altyapısı" notu silindi. Link hover: renk + `translateX(4px)`.
+
+### E. Header — search-centric yeniden yazım — `resources/views/layouts/site.blade.php`
+
+- **Top utility bar** (`.top-bar`, `#0F172A`, 36px): sol ikon'lu tel + mail, sağ Sertifikalar/Blog/Hakkımızda + ayraç + sosyal. Scroll'da gizlenir (`body.is-scrolled` → `max-height: 0`).
+- **Main bar** (`.main-bar`, beyaz, sticky, backdrop-blur): Logo (44px + `border-l` metin) │ **canlı arama** (`.mb-search`, `#F8FAFC`, büyüteç, `Ctrl K` rozeti) │ nav dropdown'ları │ WhatsApp ikon butonu + teal "Teklif Al".
+- **Canlı arama backend:** `Route::get('/ara', 'search')->name('search')` (catch-all `/{any}` ÖNCESİNDE eklendi). `SiteController::search()` + `searchCatalog()` — `?format=json` → gruplu öneri JSON; düz → `pages/search.blade.php` sonuç sayfası (`noindex,follow`). Ürün name/model/sku/brand/category araması.
+- **Arama JS:** `resources/js/header.js` — debounce 180ms fetch, gruplu dropdown (Kategoriler/Markalar/Ürünler + görsel), klavye (↑↓ Enter Esc), **⌘K / Ctrl+K** odak, "tüm sonuçlar →". Ayrıca scroll-collapse + mobil arama toggle + hamburger drawer.
+- **Mobil (<1024px):** nav + inline arama + CTA gizli; arama ikon butonu (genişleyen bar) + hamburger → `.mobile-drawer`.
+- `app.js` güncellendi: `setupHeader()` import; eski `[data-mobile-menu]` (`<details>`) mantığı kaldırıldı; mega hover/click/`is-open` mantığı korundu.
+
+### F. Mega menü v3 (full-width) — `.mega-*`
+
+- **Tam genişlik dropdown:** `.mega-menu { position:absolute; left:0; right:0 }`, iç `.mega-panel { max-width:1320px; margin-inline:auto; padding 1/1.5/2rem }` — header container'ıyla aynı hiza. `overflow: hidden` → **yatay scrollbar yok** (eski Teknik Servis taşma hatası çözüldü).
+- **Ürünler = 264px + 1fr (3:6:3 hissi):** sol kategori listesi (çizgi ikon + chevron, `max-height:460px` scroll, border-r) │ hover edilen kategorinin `.mega-cat-sub`'ı (absolute overlay) = **3 sütunlu alt-kategori grid'i** + "Tümünü İncele →" başlık + tam yükseklikte teal **promo kartı** ("Kataloğa git →" alta sabit). İlk kategori varsayılan açık (saf CSS `:first-child` + `:not(:hover)` deseni).
+- **Kalibrasyon / Teknik Servis = `3fr 9fr`:** sol `#0F172A` dark banner (mono badge + başlık + teal buton) │ sağ **2×2** ikon-kutulu servis kart grid'i. "İncele >" yok, tüm kart tıklanır.
+- Blade'de `$megaIcon()` closure'ı slug/başlıktan çizgi-ikon seçiyor (`$mi` dizisi).
+
+### G. Admin — `app/Filament/Resources/Products/ProductResource.php`
+
+- Form **5 sekmeye** bölündü: Genel / İçerik / Görseller / Doküman & Video / SEO & Schema (`Tabs` + `Tab`).
+- **OG alanları kaldırıldı** (`og_title`/`og_description`/`og_image`). `SiteController::meta()` zaten OG'yi meta başlık/açıklama + ürün görselinden otomatik türetiyor. Schema repeater (`SchemaBlockFields::section('product')`) "SEO & Schema" sekmesine taşındı.
+- **`filter_keys`** (yeni json kolon, migration `2026_09_01_060000`): İçerik sekmesinde **`CheckboxList`** — ürünün specs tablosundaki başlıklardan hangilerinin marka/kategori sayfası filtresinde çıkacağı işaretlenir. `SiteController::productSpecFilters()` yeniden yazıldı: işaretli `filter_keys` birleşimini kullanır; hiç işaretli yoksa eski whitelist heuristiğine (`buildSpecFilters` fallback) düşer.
+- **Dosya adı korunması:** `keepUploadedFileName()` helper'ı — `image`/`gallery`/doküman `path` alanlarında Filament'in rastgele hash'i yerine yüklenen dosya adı slug'a çevrilerek kullanılır (aynı ada tekrar yükleme = üzerine yazma). Doküman alanı artık **PDF + .doc/.docx** kabul ediyor.
+- Uzun açıklama RichEditor'ü admin temasıyla ~3 satıra indirildi.
+
+### H. Admin teması — `resources/css/filament/admin/theme.css` (YENİ)
+
+`AdminPanelProvider::viteTheme(...)` + `vite.config.js` input'una eklendi. Filament v4 primary/success dolgulu butonları soluk tint + koyu yazı yerine **teal-600 zemin + beyaz yazı** (`:is(.fi-color-primary,.fi-color-success)[class*='fi-bg-color-']`). RichEditor min-height 5rem.
+
+### I. Dashboard performansı
+
+Sorgular hızlıydı (~9ms). 30sn timeout = `php artisan serve` tek-thread + `filament:optimize-clear` sonrası soğuk sınıf keşfi. **Çözüm: `php artisan filament:optimize`** (bileşen + ikon önbelleği; `vendor/filament` kullanıcı düzenlemez). Bonus: `ContentOverview` (5dk) + `LatestContent` (2dk) `Cache::remember` sarıldı, count'lar tek diziye indirildi. Not: `composer update` / cache temizliği sonrası admin yavaşlarsa tekrar `php artisan filament:optimize`.
+
+### J. GitHub
+
+- `.gitignore` sıkılaştırıldı: `/database/*.sqlite*` (admin hash + iş verisi içerir, repo public) ve `/storage/app/public/media` (yüklenen dosyalar) eklendi. **Doğrulandı: `.env`, `.sqlite`, media stage'lenmedi.**
+- `git init` → commit `c38eef2` → `origin https://github.com/serloading/mta.git` → `push -u origin main` başarılı.
+- Git identity: `serca` / `theprofiterol@gmail.com`.
+
+## YAPILACAKLAR (yeni sohbette devam)
+
+Aşağıdaki 2 iş bu turda **yapılmadı** — kullanıcı ayrıntılı tasarım brief'lerini verdi, her biri odaklı bir tur gerektirir:
+
+### 1. Kalibrasyon / Teknik Servis Hizmet Detay sayfası yeniden tasarımı
+`resources/views/pages/service-detail.blade.php` ve `technical-service-detail.blade.php`. Brief özeti:
+- **A. Hero:** `#0F172A` dark, `radius 0 0 24px 24px`, `grid lg:grid-cols-12`. Sol (`col-7`): mono eyebrow badge ("TÜRKAK AKREDİTE KALİBRASYON LAB"), H1, alt metin, 3 güven rozeti (TÜRKAK / ISO 17025 / Hızlı Sertifika). Sağ (`col-5`): beyaz **sabit hızlı teklif formu kartı** (Cihaz Tipi/Adedi, Firma, Telefon/E-posta + "Hızlı Kalibrasyon Teklifi Al" teal buton). **Stok insan fotoğrafları kaldırılacak.**
+- **B. Ölçüm kapsamı:** ham `<table>` yerine **aranabilir data-rich tablo** — üstte "Cihaz veya model ara…" input filtresi. Kolonlar: Cihaz/Donanım Tipi | Ölçüm Aralığı | Belirsizlik/Tolerans | Akreditasyon Durumu (emerald "TÜRKAK Kapsamında" tag) | Aksiyon ("Kapsam İçin Teklif İste"). Veri: `config/mta.php -> services[*].scope_groups`.
+- **C. 5 adımlı yatay süreç akışı:** `grid md:grid-cols-5`, aralarda ok. 01 Cihaz Kabul → 02 Ön İnceleme → 03 Ölçüm & Analiz → 04 Sertifikalandırma → 05 Teslimat. Dikey alakasız kutular kaldırılacak.
+- **D.** Minimal SSS akordiyonu (`max-w-3xl`) + 2'li ilişkili hizmet/bakım-onarım kartı.
+- **E.** Dark navy alt banner — **tek buton** ("Listeni Yükle / Teklif Al").
+- Tokens: Teal-700 primary, `#0F172A` dark, Amber-600 accent badge, Slate paleti. Çizgi ikonlar (1.5px stroke).
+
+### 2. Ana Sayfa yeniden tasarımı
+`resources/views/pages/home.blade.php`. Brief özeti:
+- Container: `max-w-[1320px]` (artık global `.container` bunu veriyor).
+- **S1. Split hero:** `grid lg:grid-cols-12`, `bg-slate-900 text-white rounded-3xl p-8 lg:p-12`. Sol (`col-7`): mono badge ("TÜRKAK AKREDİTE KALİBRASYON & YETKİLİ SERVİS"), H1 ("Endüstriyel Ölçüm Cihazları, Kalibrasyon ve Teknik Servis Çözümleri"), **gömülü geniş canlı arama** ("Cihaz adı, model kodu veya kalibrasyon türü ara…"), "Hızlı Teklif İste" (amber) + "Ürün Kataloğu" (outline). Sağ (`col-5`): `bg-slate-800/80` istatistik kartı — `15.000+ Kalibre Cihaz`, `500+ Kurumsal Referans`, `%99.8 Memnuniyet`.
+- **S2.** 3 ana hizmet kartı (`md:grid-cols-3`, `hover:border-teal-500 hover:shadow-lg group`, tüm kart tıklanır).
+- **S3.** Öne çıkan cihaz kataloğu — `grid grid-cols-2 md:4 lg:6`, görselli kategori çipleri (80×80 `object-contain`, beyaz zemin, alt başlık). "Tüm Ürünleri İncele →".
+- **S4.** Marka logo ribbon — `grayscale hover:grayscale-0`, Shimadzu/Weightlab/Velp/Lamy...
+- **S5.** "Neden MTA Endüstri?" — `bg-slate-50 rounded-3xl py-16`, `md:grid-cols-4` icon-benefit kartları (TÜRKAK Akredite / Hızlı Servis / Orijinal Yedek Parça / Uzman Kadro).
+- **S6.** 2 kolon: sol SSS akordiyonu, sağ 2 görselli blog/rehber kartı.
+- **S7.** Dark navy alt lead banner — **tek büyük CTA** ("Toplu Teklif Talebi Oluştur").
+- **Temizlik:** alttaki ~10 yan yana SEO metin kutusu kaldırılacak; bilgi SSS + icon-benefit kartlarına dağıtılacak. Tüm "İncele >" butonları kaldırılıp kartlar tam tıklanır yapılacak. Çizgi ikon dili (1.5px stroke).
+
+### Genel notlar (yeni sohbet için)
+- `php artisan serve` port 8000'de zaten çalışıyor (kullanıcının terminali). Cache'ler: geliştirme için `view:cache` yapılmadı (blade hot-reload); `filament:optimize` aktif tutulmalı.
+- Browser pane'de uzun sayfa **scroll sonrası screenshot** güvenilir değil — doğrulamayı `javascript_tool` ile computed-style/DOM üzerinden yapın.
+- Değişiklikten sonra: `npm run build` + `php artisan test` (13 test) + commit + `git push`.
