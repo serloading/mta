@@ -62,22 +62,34 @@
         </div>
     </section>
 
-    {{-- ============== SECTION 2 · STICKY CATEGORY TABS ============== --}}
-    <div data-scope-toolbar class="sticky top-[68px] z-30 -mx-4 mb-8 border-b border-slate-200 bg-slate-50/95 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <div class="flex flex-wrap gap-1.5">
-            <button type="button" data-scope-filter="all" class="scope-tab is-active">Tümü</button>
-            @foreach($scopeCategories as $cat)
-                <button type="button" data-scope-filter="{{ $cat['slug'] }}" class="scope-tab">
-                    <span aria-hidden="true">{{ $cat['icon'] }}</span> {{ $cat['title'] }}
-                </button>
-            @endforeach
-        </div>
-    </div>
+    {{-- ============== SECTION 2 · INDEX RAIL + SCOPE DATA ============== --}}
+    <div id="kapsam-top" class="my-8 grid grid-cols-1 gap-8 lg:grid-cols-12">
 
-    {{-- ============== SECTION 3 · SCOPE DATA CARDS ============== --}}
-    <section class="pb-6">
+        {{-- SOL: ölçüm alanı index rayı (dikey nav — pill değil) --}}
+        <aside data-scope-toolbar class="lg:col-span-3">
+            <div class="lg:sticky lg:top-24 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+                <p class="px-3 pb-2 pt-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">Ölçüm Alanları</p>
+                <nav class="scope-rail-list flex gap-1 overflow-x-auto pb-1 lg:max-h-[70vh] lg:flex-col lg:overflow-y-auto lg:pb-0 mega-scroll">
+                    <a href="#kapsam-top" data-scope-filter="all" class="scope-rail is-active">
+                        <span class="scope-rail-ico" aria-hidden="true">▦</span>
+                        <span class="flex-1">Tüm Kapsam</span>
+                        <span class="scope-rail-count">{{ $scopeStats['groups'] }}</span>
+                    </a>
+                    @foreach($scopeCategories as $cat)
+                        <a href="#{{ $cat['slug'] }}" data-scope-filter="{{ $cat['slug'] }}" class="scope-rail">
+                            <span class="scope-rail-ico" aria-hidden="true">{{ $cat['icon'] }}</span>
+                            <span class="flex-1">{{ $cat['title'] }}</span>
+                            <span class="scope-rail-count">{{ count($cat['groups']) }}</span>
+                        </a>
+                    @endforeach
+                </nav>
+            </div>
+        </aside>
+
+        {{-- SAĞ: kategori blokları --}}
+        <div class="lg:col-span-9">
         @foreach($scopeCategories as $cat)
-            <div data-scope-block data-cat="{{ $cat['slug'] }}" id="{{ $cat['slug'] }}" class="mb-12 scroll-mt-40">
+            <div data-scope-block data-cat="{{ $cat['slug'] }}" id="{{ $cat['slug'] }}" class="mb-12 scroll-mt-28">
                 <div class="mb-5 flex flex-wrap items-center gap-3 border-b-2 border-slate-200 pb-3">
                     <span class="text-2xl leading-none" aria-hidden="true">{{ $cat['icon'] }}</span>
                     <h2 class="text-xl font-extrabold text-slate-900 lg:text-2xl">{{ $cat['title'] }} Kalibrasyonları</h2>
@@ -149,14 +161,15 @@
             </div>
         @endforeach
 
-        <p data-scope-empty hidden class="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
-            Aramanızla eşleşen cihaz grubu bulunamadı. Farklı bir terim deneyin.
-        </p>
+            <p data-scope-empty hidden class="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
+                Aramanızla eşleşen cihaz grubu bulunamadı. Farklı bir terim deneyin.
+            </p>
 
-        <p class="mt-6 border-t border-slate-200 pt-5 text-xs leading-relaxed text-slate-500">
-            <span aria-hidden="true">*</span> {!! $scopeNote !!}
-        </p>
-    </section>
+            <p class="mt-6 border-t border-slate-200 pt-5 text-xs leading-relaxed text-slate-500">
+                <span aria-hidden="true">*</span> {!! $scopeNote !!}
+            </p>
+        </div>
+    </div>
 
     {{-- ============== SECTION 4 · OUT-OF-SCOPE SUPPORT ============== --}}
     <section class="my-6 rounded-2xl border border-slate-200 bg-white p-6 lg:p-8">

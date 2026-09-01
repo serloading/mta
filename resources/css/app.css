@@ -5305,33 +5305,48 @@ body.pdp-noscroll { overflow: hidden; }
     .clower-cta h2 { font-size: 21px; }
 }
 
-/* ============================ Kapsam sayfası (/kapsam) tab bileşeni ============================ */
-.scope-tab {
+/* ============================ Kapsam sayfası (/kapsam) — ölçüm alanı index rayı ============================ */
+.scope-rail {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
     flex: none;
     white-space: nowrap;
-    border: 1px solid #e2e8f0;
-    background: #ffffff;
-    color: #475569;
-    font: inherit;
+    padding: .5rem .75rem;
+    border-radius: .5rem;
+    border-left: 2px solid transparent;
     font-size: .8125rem;
     font-weight: 500;
-    padding: .4rem .85rem;
-    border-radius: 9999px;
-    cursor: pointer;
-    transition: background .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
+    color: #475569;
+    text-decoration: none;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
 
-.scope-tab:hover {
-    background: #e2e8f0;
+.scope-rail:hover {
+    background: #f1f5f9;
     color: #0f172a;
 }
 
-.scope-tab.is-active {
-    background: #0f766e;
-    border-color: #0f766e;
-    color: #ffffff;
+.scope-rail.is-active {
+    background: #f0fdfa;
+    color: #0f766e;
+    border-left-color: #0f766e;
     font-weight: 600;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, .08);
+}
+
+.scope-rail-ico { font-size: 1rem; line-height: 1; }
+
+.scope-rail-count {
+    font-size: .6875rem;
+    color: #94a3b8;
+    font-variant-numeric: tabular-nums;
+}
+
+.scope-rail.is-active .scope-rail-count { color: #0f766e; }
+
+@media (min-width: 1024px) {
+    .scope-rail { white-space: normal; }
+    .scope-rail-list > .scope-rail { flex: initial; }
 }
 
 /* ============================ Mega menü — Ürünler sol liste ince scrollbar ============================ */

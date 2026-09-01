@@ -18,6 +18,10 @@ export default function setupScope() {
             .replace(/\s+/g, ' ')
             .trim();
 
+    const markRail = (slug) => {
+        chips.forEach((c) => c.classList.toggle('is-active', c.dataset.scopeFilter === slug));
+    };
+
     const apply = () => {
         const q = norm(search ? search.value : '');
         let anyVisible = false;
@@ -54,19 +58,19 @@ export default function setupScope() {
     };
 
     chips.forEach((chip) => {
-        chip.addEventListener('click', () => {
+        chip.addEventListener('click', (event) => {
+            event.preventDefault();
             activeFilter = chip.dataset.scopeFilter;
-            chips.forEach((c) => c.classList.toggle('is-active', c === chip));
+            markRail(activeFilter);
             apply();
 
-            if (activeFilter !== 'all') {
-                const target = document.getElementById(activeFilter);
-                if (target) {
-                    const header = document.querySelector('.site-header');
-                    const offset = (header ? header.offsetHeight : 73) + toolbar.offsetHeight + 16;
-                    const top = target.getBoundingClientRect().top + window.scrollY - offset;
-                    window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
-                }
+            const targetId = activeFilter === 'all' ? 'kapsam-top' : activeFilter;
+            const target = document.getElementById(targetId);
+            if (target) {
+                const header = document.querySelector('.site-header');
+                const offset = (header ? header.offsetHeight : 73) + 24;
+                const top = target.getBoundingClientRect().top + window.scrollY - offset;
+                window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
             }
         });
     });
@@ -79,7 +83,22 @@ export default function setupScope() {
         });
     }
 
-    // Deep link: /kapsam#grup-id opens that card
+    // Scrollspy — yalnızca filtre "Tümü" ve arama boşken rayı senkron tut
+    if ('IntersectionObserver' in window && blocks.length) {
+        const spy = new IntersectionObserver(
+            (entries) => {
+                if (activeFilter !== 'all' || (search && search.value.trim() !== '')) return;
+                const visible = entries
+                    .filter((e) => e.isIntersecting)
+                    .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+                if (visible) markRail(visible.target.dataset.cat);
+            },
+            { rootMargin: '-120px 0px -65% 0px', threshold: 0 },
+        );
+        blocks.forEach((b) => spy.observe(b));
+    }
+
+    // Deep link: /kapsam#grup-id o kartı açar
     if (window.location.hash) {
         const card = document.querySelector(`${window.location.hash}[data-scope-card]`);
         if (card) card.open = true;
