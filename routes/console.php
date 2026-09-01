@@ -309,3 +309,66 @@ Artisan::command('mta:sync-content', function () {
     $this->line('Blog yazıları: ' . Article::query()->count());
     $this->line('SSS: ' . Faq::query()->count());
 })->purpose('Statik MTA config ve temiz ürün import verisini database tablolarına aktarır');
+
+Artisan::command('mta:sync-scope {--fresh : Önce tüm kapsam verisini sil} {--force : Mevcut kayıtları da config değeriyle EZ (admin düzenlemeleri kaybolur)}', function () {
+    $fresh = $this->option('fresh');
+    $force = $this->option('force') || $fresh;
+
+    if ($fresh) {
+        \App\Models\ScopeGroup::query()->delete();
+        \App\Models\ScopeCategory::query()->delete();
+    }
+
+    $created = ['cat' => 0, 'group' => 0];
+    $updated = ['cat' => 0, 'group' => 0];
+
+    foreach (config('mta-scope.categories', []) as $ci => $cat) {
+        $category = \App\Models\ScopeCategory::query()->firstWhere('slug', $cat['slug']);
+        $catPayload = [
+            'icon' => $cat['icon'] ?? null,
+            'title' => $cat['title'],
+            'summary' => $cat['summary'] ?? null,
+            'sort_order' => $ci,
+            'is_active' => true,
+        ];
+
+        if (! $category) {
+            $category = \App\Models\ScopeCategory::query()->create(['slug' => $cat['slug']] + $catPayload);
+            $created['cat']++;
+        } elseif ($force) {
+            $category->update($catPayload);
+            $updated['cat']++;
+        }
+
+        foreach ($cat['groups'] ?? [] as $gi => $group) {
+            $key = $group['id'] ?? ($cat['slug'] . '-' . ($gi + 1));
+            $existing = \App\Models\ScopeGroup::query()
+                ->where('scope_category_id', $category->id)
+                ->where('key', $key)
+                ->first();
+            $groupPayload = [
+                'title' => $group['title'],
+                'columns' => $group['columns'] ?? [],
+                'rows' => $group['rows'] ?? [],
+                'sort_order' => $gi,
+                'is_active' => true,
+            ];
+
+            if (! $existing) {
+                \App\Models\ScopeGroup::query()->create(
+                    ['scope_category_id' => $category->id, 'key' => $key] + $groupPayload,
+                );
+                $created['group']++;
+            } elseif ($force) {
+                $existing->update($groupPayload);
+                $updated['group']++;
+            }
+        }
+    }
+
+    $this->info(sprintf(
+        'Kapsam senkronize edildi. Eklenen: %d kategori / %d grup. Güncellenen: %d kategori / %d grup.%s',
+        $created['cat'], $created['group'], $updated['cat'], $updated['group'],
+        $force ? '' : ' (Mevcut kayıtlara dokunulmadı; ezmek için --force.)'
+    ));
+})->purpose('config/mta-scope.php verisini scope_categories / scope_groups tablolarına aktarır (varsayılan: sadece eksikleri ekler)');

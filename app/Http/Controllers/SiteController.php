@@ -230,7 +230,7 @@ class SiteController extends Controller
     public function scope()
     {
         $scope = config('mta-scope');
-        $categories = $scope['categories'] ?? [];
+        $categories = $this->scopeCategoriesData();
 
         $groupCount = collect($categories)->sum(fn ($cat) => count($cat['groups'] ?? []));
         $rowCount = collect($categories)
@@ -255,6 +255,38 @@ class SiteController extends Controller
                 ]),
             ]),
         ]);
+    }
+
+    private function scopeCategoriesData(): array
+    {
+        static $categories = null;
+
+        if ($categories !== null && ! app()->runningUnitTests()) {
+            return $categories;
+        }
+
+        if ($this->canReadTable('scope_categories') && \App\Models\ScopeCategory::query()->exists()) {
+            return $categories = \App\Models\ScopeCategory::query()
+                ->where('is_active', true)
+                ->with(['groups' => fn ($q) => $q->where('is_active', true)->orderBy('sort_order')])
+                ->orderBy('sort_order')
+                ->get()
+                ->map(fn (\App\Models\ScopeCategory $cat) => [
+                    'slug' => $cat->slug,
+                    'icon' => $cat->icon,
+                    'title' => $cat->title,
+                    'summary' => $cat->summary,
+                    'groups' => $cat->groups->map(fn (\App\Models\ScopeGroup $g) => [
+                        'id' => $g->key ?: ($cat->slug . '-' . $g->id),
+                        'title' => $g->title,
+                        'columns' => $g->columns ?? [],
+                        'rows' => $g->rows ?? [],
+                    ])->all(),
+                ])
+                ->all();
+        }
+
+        return $categories = config('mta-scope.categories', []);
     }
 
     public function products(Request $request)
