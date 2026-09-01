@@ -341,7 +341,7 @@ class AdminPanelTest extends TestCase
             ->assertDontSee('card-kicker">1 ürün', false);
     }
 
-    public function test_product_category_pages_use_brand_first_horizontal_catalog_layout(): void
+    public function test_product_category_pages_use_filtered_catalog_layout(): void
     {
         $category = ProductCategory::query()->create([
             'name' => 'Viskozimetre',
@@ -378,39 +378,29 @@ class AdminPanelTest extends TestCase
             ]);
         }
 
-        $response = $this->get('/urunler/viskozimetre')
+        // Kategori sayfası artık /urunler ile aynı filtreli katalog partial'ını kullanır
+        $this->get('/urunler/viskozimetre')
             ->assertOk()
-            // new scoped catalog UI shell + components
-            ->assertSee('class="catalog-ui"', false)
-            ->assertSee('cui-hero', false)
-            ->assertSee('cui-panel', false)
-            ->assertSee('cui-grid', false)
-            ->assertSee('cui-card', false)
-            ->assertSee('İncele')
-            // brand navigation surfaced in the lower "featured brands" block
-            ->assertSee('clower-brands', false)
-            ->assertSee('clower-brand-card', false)
-            // product names are shown on the cards
+            ->assertSee('data-catalog', false)
+            ->assertSee('data-catalog-filter', false)
+            ->assertSee('catalog-card', false)
+            ->assertSee('İncele / Teklif İste')
             ->assertSee('VELP Test Viskozimetre')
-            // internal placeholder model / sku strings must not leak onto cards
+            // kategori sabitken sol panelde "Kategoriler" bloğu görünmez, markalar görünür
+            ->assertSee('Markalar')
+            // dahili placeholder model/sku kartlara sızmamalı
             ->assertDontSee('MODEL-SHOULD-HIDE')
             ->assertDontSee('SKU-SHOULD-HIDE')
-            ->assertDontSee('<div class="taxonomy-stats">', false)
+            // eski taksonomi/cui yapısı kalmadı
+            ->assertDontSee('cui-hero', false)
             ->assertDontSee('catalog-sidebar', false)
-            ->assertDontSee('<dl>', false);
+            ->assertDontSee('taxonomy-stats', false);
 
-        $content = $response->getContent();
-        $heroPosition = strpos($content, 'cui-hero');
-        $catalogPosition = strpos($content, 'cui-2col');
-        $lowerPosition = strpos($content, 'catalog-lower');
-        $brandPosition = strpos($content, 'clower-brands');
-
-        $this->assertNotFalse($heroPosition);
-        $this->assertNotFalse($catalogPosition);
-        $this->assertNotFalse($lowerPosition);
-        $this->assertNotFalse($brandPosition);
-        $this->assertGreaterThan($heroPosition, $catalogPosition);
-        $this->assertGreaterThan($catalogPosition, $lowerPosition);
-        $this->assertGreaterThan($lowerPosition, $brandPosition);
+        // Marka sayfası da aynı katalog + marka logosu hero'da
+        $this->get('/urunler/marka/velp')
+            ->assertOk()
+            ->assertSee('data-catalog', false)
+            ->assertSee('storage/media/brands/velp.webp', false)
+            ->assertSee('VELP Test Viskozimetre');
     }
 }

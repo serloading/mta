@@ -292,19 +292,41 @@ class SiteController extends Controller
     public function products(Request $request)
     {
         $productsSeo = $this->productsPageSeoContent();
-        $all = collect($this->productsData());
+
+        return view('pages.products', array_merge($this->buildCatalog($request, collect($this->productsData())), [
+            'meta' => $this->meta($productsSeo['meta_title'], $productsSeo['meta_description']),
+            'productsSeo' => $productsSeo,
+            'brands' => $this->productBrands(),
+            'genericQuoteCta' => $this->quoteCta('product', null, 'Ürün kataloğu', route('products.index')),
+            'schema' => $this->schemaGraph([
+                $this->webPageSchema($productsSeo['meta_title'], $productsSeo['meta_description']),
+                $this->breadcrumbSchema([
+                    ['name' => 'Ana Sayfa', 'url' => route('home')],
+                    ['name' => 'Ürünler', 'url' => route('products.index')],
+                ]),
+            ]),
+        ]));
+    }
+
+    /**
+     * Ortak katalog: q araması, kategori/marka/durum facet filtreleri, sıralama,
+     * sayfalama ve $base kapsamına göre facet listeleri. products/category/brand paylaşır.
+     */
+    private function buildCatalog(Request $request, \Illuminate\Support\Collection $base, array $opts = []): array
+    {
+        $lockCategory = $opts['lockCategory'] ?? null;
+        $lockBrand = $opts['lockBrand'] ?? null;
 
         $q = trim((string) $request->query('q', ''));
-        $selectedCats = array_values(array_filter((array) $request->query('kategori', [])));
-        $selectedBrands = array_values(array_filter((array) $request->query('marka', [])));
+        $selectedCats = $lockCategory ? [] : array_values(array_filter((array) $request->query('kategori', [])));
+        $selectedBrands = $lockBrand ? [] : array_values(array_filter((array) $request->query('marka', [])));
         $selectedStatus = array_values(array_filter((array) $request->query('durum', [])));
-        // Geriye uyum: /urunler?brand=xxx
-        if ($legacyBrand = $request->query('brand')) {
+        if (! $lockBrand && ($legacyBrand = $request->query('brand'))) {
             $selectedBrands = array_values(array_unique([...$selectedBrands, $legacyBrand]));
         }
         $sort = (string) $request->query('sirala', 'onerilen');
 
-        $filtered = $all;
+        $filtered = $base;
 
         if ($q !== '') {
             $needle = Str::lower($q);
@@ -345,21 +367,34 @@ class SiteController extends Controller
             ['path' => $request->url(), 'pageName' => 'sayfa', 'query' => $request->except('sayfa')],
         );
 
-        return view('pages.products', [
-            'meta' => $this->meta($productsSeo['meta_title'], $productsSeo['meta_description']),
-            'productsSeo' => $productsSeo,
+        // Facet listeleri — sayfanın kapsamına ($base) göre, adet sırasıyla
+        $catNames = $this->productCategories()->keyBy('slug');
+        $brandNames = $this->productBrands()->keyBy('slug');
+        $facetCategories = $base->groupBy('category_slug')
+            ->map(fn ($rows, $slug) => [
+                'slug' => $slug,
+                'name' => $catNames[$slug]['name'] ?? $rows->first()['category'] ?? $slug,
+                'count' => $rows->count(),
+            ])
+            ->filter(fn ($c) => $c['slug'])
+            ->sortByDesc('count')
+            ->take(20)
+            ->values();
+        $facetBrands = $base->groupBy('brand_slug')
+            ->map(fn ($rows, $slug) => [
+                'slug' => $slug,
+                'name' => $brandNames[$slug]['name'] ?? $rows->first()['brand'] ?? $slug,
+                'count' => $rows->count(),
+            ])
+            ->filter(fn ($b) => $b['slug'])
+            ->sortByDesc('count')
+            ->values();
+
+        return [
             'products' => $products,
             'total' => $total,
-            'facetCategories' => $this->productCategories()
-                ->filter(fn ($c) => ($c['count'] ?? 0) > 0)
-                ->sortByDesc('count')
-                ->take(20)
-                ->values(),
-            'facetBrands' => $this->productBrands()
-                ->filter(fn ($b) => ($b['count'] ?? 0) > 0)
-                ->sortByDesc('count')
-                ->values(),
-            'brands' => $this->productBrands(),
+            'facetCategories' => $facetCategories,
+            'facetBrands' => $facetBrands,
             'filters' => [
                 'q' => $q,
                 'kategori' => $selectedCats,
@@ -368,15 +403,9 @@ class SiteController extends Controller
                 'sirala' => $sort,
             ],
             'hasActiveFilters' => $q !== '' || $selectedCats || $selectedBrands || $selectedStatus,
-            'genericQuoteCta' => $this->quoteCta('product', null, 'Ürün kataloğu', route('products.index')),
-            'schema' => $this->schemaGraph([
-                $this->webPageSchema($productsSeo['meta_title'], $productsSeo['meta_description']),
-                $this->breadcrumbSchema([
-                    ['name' => 'Ana Sayfa', 'url' => route('home')],
-                    ['name' => 'Ürünler', 'url' => route('products.index')],
-                ]),
-            ]),
-        ]);
+            'catalogLock' => ['category' => $lockCategory, 'brand' => $lockBrand],
+            'catalogAction' => $request->url(),
+        ];
     }
 
     public function productCategory(Request $request, string $category)
@@ -386,46 +415,26 @@ class SiteController extends Controller
             $this->productCategorySeoContent($categoryItem['slug']),
             $categoryItem,
         );
-        $brand = $request->query('brand');
-        $activeSpecs = $this->activeSpecFilters($request);
         $categorySlugs = $this->productCategoryAndDescendantSlugs($categoryItem['slug']);
-        $baseProducts = collect($this->productsData())->whereIn('category_slug', $categorySlugs)->values();
-
-        if ($brand) {
-            $baseProducts = $baseProducts->where('brand_slug', $brand)->values();
-        }
-
-        $products = $this->applySpecFilters($baseProducts, $activeSpecs);
-
-        if (in_array(($categorySeo['slug'] ?? null), ['teraziler', 'analitik-teraziler', 'hassas-teraziler', 'endustriyel-teraziler', 'mikro-teraziler', 'ph-metre', 'ph-iletkenlik', 'refraktometre', 'laboratuvar-tipi-refraktometreler', 'tasinabilir-tip-optik-refraktometreler', 'tasinabilir-tip-dijital-refraktometreler', 'densitometre', 'yogunluk-olcerler', 'titratorler', 'kral-fischer', 'karl-fischer-titratorler', 'kulometrik-karl-fischer-titratorler', 'volumetrik-karl-fischer-titratorler', 'potansiyometrik-titratorler', 'piston-buretler', 'manyetik-karistirici', 'isitmali-manyetik-karistirici', 'isitmasiz-manyetik-karistirici', 'mekanik-karistirici', 'vorteks-karistiricilar', 'karistiricilar', 'su-banyolari', 'su-banyosu', 'ultrasonik-banyo', 'santrifujler', 'inkubatorler', 'sogutmali-inkubator', 'erime-noktasi', 'polarimetreler', 'homojenizator', 'viskozimetre', 'rotasyonel-viskozimetre', 'tekstur-analiz-cihazi', 'nem-tayin', 'etuv', 'balon-isiticilar', 'termoreaktor', 'jar-test', 'diger-cevre-cihazlari', 'boi-olcum-cihazi', 'hot-plate', 'rotator-calkalayici', 'pipetler'], true)) {
-            $products = $products
-                ->map(function ($product) use ($categorySeo) {
-                    $imageAlt = $this->productCategoryImageAlt($categorySeo['slug'], $product);
-
-                    return [
-                        ...$product,
-                        'image_alt' => $imageAlt,
-                        'image_label' => $imageAlt,
-                    ];
-                })
-                ->values();
-        }
+        $base = collect($this->productsData())
+            ->whereIn('category_slug', $categorySlugs)
+            ->map(fn ($product) => [
+                ...$product,
+                'image_alt' => $this->productCategoryImageAlt($categoryItem['slug'], $product),
+            ])
+            ->values();
 
         $metaTitle = $categorySeo['meta_title'] ?? $categoryItem['name'] . ' Ürünleri | MTA Endüstri';
         $metaDescription = $categorySeo['meta_description'] ?? $categoryItem['summary'] ?? $categoryItem['name'] . ' kategorisindeki teknik ürünleri marka, model ve özellik bilgileriyle inceleyin.';
 
-        return view('pages.product-category', [
+        return view('pages.product-category', array_merge($this->buildCatalog($request, $base, ['lockCategory' => $categoryItem['slug']]), [
             'meta' => array_merge($this->meta($metaTitle, $metaDescription), [
                 'robots' => $categorySeo['robots'] ?? 'index,follow',
             ]),
-            'products' => $products,
             'category' => $categoryItem,
             'categorySeo' => $categorySeo,
-            'brand' => $brand,
-            'categories' => $this->productCategories(),
             'brands' => $this->productBrandsForCategory($category),
-            'specFilters' => $this->productSpecFilters($baseProducts, $activeSpecs),
-            'activeSpecFilters' => $activeSpecs,
+            'genericQuoteCta' => $this->quoteCta('product', null, $categoryItem['name'] . ' kataloğu', route('products.category', $categoryItem['slug'])),
             'schema' => $this->schemaGraph([
                 $this->webPageSchema($metaTitle, $metaDescription),
                 $this->breadcrumbSchema([
@@ -434,7 +443,7 @@ class SiteController extends Controller
                     ['name' => $categoryItem['name'], 'url' => route('products.category', $categoryItem['slug'])],
                 ]),
             ]),
-        ]);
+        ]));
     }
 
     public function brands()
@@ -464,28 +473,16 @@ class SiteController extends Controller
             $brandItem,
             $this->productCategoriesForBrand($brand),
         );
-        $category = $request->query('category');
-        $activeSpecs = $this->activeSpecFilters($request);
-        $baseProducts = collect($this->productsData())->where('brand_slug', $brand)->values();
-
-        if ($category) {
-            $baseProducts = $baseProducts->where('category_slug', $category)->values();
-        }
-
-        $products = $this->applySpecFilters($baseProducts, $activeSpecs);
+        $base = collect($this->productsData())->where('brand_slug', $brand)->values();
         $metaTitle = $brandSeo['meta_title'] ?? $brandItem['name'] . ' Ürünleri | MTA Endüstri';
         $metaDescription = $brandSeo['meta_description'] ?? $brandItem['summary'] ?? $brandItem['name'] . ' markasına ait teknik ürünleri kategori, model ve özellik bilgileriyle inceleyin.';
 
-        return view('pages.product-brand', [
+        return view('pages.product-brand', array_merge($this->buildCatalog($request, $base, ['lockBrand' => $brandItem['slug']]), [
             'meta' => $this->meta($metaTitle, $metaDescription, $brandItem['logo'] ?? null),
-            'products' => $products,
             'brand' => $brandItem,
             'brandSeo' => $brandSeo,
-            'category' => $category,
-            'categories' => $this->productCategoriesForBrand($brand),
             'brands' => $this->productBrands(),
-            'specFilters' => $this->productSpecFilters($baseProducts, $activeSpecs),
-            'activeSpecFilters' => $activeSpecs,
+            'genericQuoteCta' => $this->quoteCta('product', null, $brandItem['name'] . ' kataloğu', route('products.brand', $brandItem['slug'])),
             'schema' => $this->schemaGraph([
                 $this->webPageSchema($metaTitle, $metaDescription),
                 $this->breadcrumbSchema([
@@ -494,7 +491,7 @@ class SiteController extends Controller
                     ['name' => $brandItem['name'], 'url' => route('products.brand', $brandItem['slug'])],
                 ]),
             ]),
-        ]);
+        ]));
     }
 
     public function productDetail(string $slug)

@@ -1,114 +1,61 @@
 @extends('layouts.site')
 
+@php use Illuminate\Support\Str; @endphp
+
 @section('content')
-@php
-    $activeSpecFilters = $activeSpecFilters ?? [];
+<div class="bg-slate-50 text-slate-900">
+<div class="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-8">
 
-    $primaryGroup = [
-        'title' => 'Kategoriler',
-        'options' => collect([[
-            'label' => 'Tüm kategoriler',
-            'count' => $brand['count'],
-            'url' => route('products.brand', $brand['slug']),
-            'active' => empty($category),
-        ]])->concat($categories->map(fn ($item) => [
-            'label' => $item['name'],
-            'count' => $item['count'],
-            'url' => route('products.brand', ['brand' => $brand['slug'], 'category' => $item['slug']]),
-            'active' => $category === $item['slug'],
-        ]))->all(),
-    ];
-
-    $clearUrl = route('products.brand', $brand['slug']);
-    $activeCount = (int) ! empty($category) + count($activeSpecFilters);
-@endphp
-
-<div class="catalog-ui" data-catalog>
-    <div class="cui-crumbbar">
-        <div class="cui-shell">
-            <nav class="cui-crumbs" aria-label="Breadcrumb">
-                <a href="{{ route('home') }}">Ana Sayfa</a>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                <a href="{{ route('brands.index') }}">Markalar</a>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                <span aria-current="page">{{ $brand['name'] }}</span>
-            </nav>
-        </div>
-    </div>
-
-    <div class="cui-shell cui-page">
-        <section class="cui-hero">
-            <div class="cui-hero-logo">
-                @if(! empty($brand['logo']))
-                    <img src="{{ asset($brand['logo']) }}" alt="{{ $brandSeo['logo_alt'] ?? $brand['name'] . ' logosu' }}">
-                @else
-                    <span>{{ $brand['name'] }}</span>
-                @endif
-            </div>
-            <div class="cui-hero-main">
-                <h1>{{ $brandSeo['h1'] ?? $brand['name'] . ' ürünleri' }}</h1>
-                <div class="cui-hero-badges">
-                    <span class="cui-trust">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-                        Kurumsal Tedarik
-                    </span>
-                    <span class="cui-trust cui-trust--muted">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.7 2.7-2-2 2.7-2.7z"/></svg>
-                        Teknik Servis Desteği
-                    </span>
-                </div>
-                <p class="cui-hero-lead">
-                    {{ $brandSeo['hero_text'] ?? $brand['summary'] ?? $brand['name'] . ' markasına ait ürünler kategori, model, SKU ve teknik özellik bilgileriyle teklif odaklı katalog yapısında listelenir.' }}
-                </p>
-                <div class="cui-hero-actions">
-                    <a class="cui-btn" href="{{ route('quote', ['source_type' => 'service', 'source_name' => $brand['name'] . ' kalibrasyon hizmeti']) }}">
-                        {{ $brand['name'] }} Kalibrasyon Hizmeti Al
-                    </a>
-                    <a class="cui-btn cui-btn--ghost" href="{{ route('contact') }}">Detaylı Bilgi Al</a>
-                </div>
-            </div>
-        </section>
-
-        <div class="cui-2col">
-            <aside class="cui-aside" aria-label="{{ $brand['name'] }} filtreleri">
-                @include('partials.catalog-filters', [
-                    'primaryGroup' => $primaryGroup,
-                    'specFilters' => $specFilters,
-                    'clearUrl' => $clearUrl,
-                    'hasActive' => $activeCount > 0,
-                ])
-            </aside>
-
+    {{-- ============ HERO ============ --}}
+    <section class="my-6 rounded-3xl bg-slate-900 p-8 text-white lg:p-10">
+        <nav class="mb-3 flex flex-wrap items-center gap-1.5 text-xs text-slate-400" aria-label="Breadcrumb">
+            <a href="{{ route('home') }}" class="text-teal-400 hover:underline">Ana Sayfa</a><span>/</span>
+            <a href="{{ route('brands.index') }}" class="text-teal-400 hover:underline">Markalar</a><span>/</span>
+            <span>{{ $brand['name'] }}</span>
+        </nav>
+        <div class="flex flex-wrap items-center gap-4">
+            @if(! empty($brand['logo']))
+                <span class="flex h-14 items-center justify-center rounded-xl bg-white px-4">
+                    <img src="{{ asset($brand['logo']) }}" alt="{{ $brand['name'] }}" class="h-8 w-auto object-contain" loading="lazy">
+                </span>
+            @endif
             <div>
-                @include('partials.catalog-results', [
-                    'products' => $products,
-                    'resultsLabel' => $brand['name'] . ' markasına ait',
-                    'primaryGroup' => $primaryGroup,
-                    'specFilters' => $specFilters,
-                    'clearUrl' => $clearUrl,
-                    'activeCount' => $activeCount,
-                    'emptyTitle' => $brandSeo['empty_state']['title'] ?? $brand['name'] . ' ürünleri için teknik talep oluşturun',
-                    'emptyText' => $brandSeo['empty_state']['text'] ?? 'Aradığınız marka, ürün grubu veya modeli paylaşarak ürün bilgisi ve teklif talebi oluşturabilirsiniz.',
-                    'emptyCtaUrl' => route('quote', ['source_type' => 'product', 'source_name' => $brand['name']]),
-                    'emptyCtaLabel' => $brandSeo['primary_cta'] ?? 'Bu Marka İçin Teklif Al',
-                ])
+                <p class="font-mono text-xs font-bold uppercase tracking-wider text-teal-400">Yetkili Tedarikçi</p>
+                <h1 class="mt-1 text-2xl font-extrabold lg:text-4xl">{{ $brandSeo['h1'] ?? ($brand['name'] . ' Ürünleri') }}</h1>
             </div>
         </div>
+        <p class="mt-3 max-w-2xl text-sm text-slate-300">{{ $brandSeo['hero_text'] ?? $brand['summary'] ?? ($brand['name'] . ' markasına ait cihazları kategori ve teknik özelliğe göre filtreleyin.') }}</p>
+    </section>
+
+    {{-- ============ KATALOG ============ --}}
+    <div class="my-8">
+        @include('partials.product-catalog', ['clearUrl' => route('products.brand', $brand['slug'])])
     </div>
+
+    {{-- ============ MARKA BİLGİ KARTLARI ============ --}}
+    @if(! empty($brandSeo['sections']))
+        <section class="my-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+            @foreach(collect($brandSeo['sections'])->take(2) as $sec)
+                <div class="rounded-2xl border border-slate-200 bg-white p-6">
+                    <h2 class="text-base font-bold text-slate-900">{{ $sec['title'] }}</h2>
+                    <p class="mt-3 text-sm leading-relaxed text-slate-600">{{ Str::limit($sec['text'], 420) }}</p>
+                </div>
+            @endforeach
+        </section>
+    @endif
+
+    {{-- ============ ALT CTA ============ --}}
+    <section class="my-12 flex flex-col items-center justify-between gap-6 rounded-3xl bg-slate-900 p-8 text-white shadow-2xl md:flex-row lg:p-12">
+        <div>
+            <h2 class="text-2xl font-bold">{{ $brand['name'] }} cihazları için teklif alın</h2>
+            <p class="mt-1 text-sm text-slate-300">Model ve adet bilgisiyle talebinizi iletin, teknik ekibimiz aynı gün dönüş yapsın.</p>
+        </div>
+        <a href="{{ $genericQuoteCta['quote_url'] }}"
+           class="inline-flex h-12 shrink-0 items-center justify-center rounded-lg bg-teal-600 px-8 text-sm font-bold text-white shadow-lg transition hover:bg-teal-500">
+            Teklif Talebi Oluştur
+        </a>
+    </section>
+
 </div>
-
-@php
-    $lowerChips = $categories->map(fn ($c) => [
-        'label' => $c['name'],
-        'url' => route('products.brand', ['brand' => $brand['slug'], 'category' => $c['slug']]),
-    ]);
-@endphp
-
-@include('partials.catalog-lower', [
-    'seo' => $brandSeo ?: [],
-    'entityName' => $brand['name'],
-    'quoteUrl' => route('quote', ['source_type' => 'product', 'source_name' => $brand['name']]),
-    'chips' => $lowerChips,
-    'brandCards' => null,
-])
+</div>
 @endsection
