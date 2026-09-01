@@ -2496,6 +2496,28 @@ Eski parçalı SEO metin blokları (`credential-band`, `lab-section`, `sector-gr
 - Yerelde DOM/JS ile doğrulandı: home 7 bölüm render, kategori çipleri 4/6 gerçek ürün fotosu (titratör/viskozimetre demo DB'de görselli ürün yok → ikon fallback); kapsam instant search ("manometre" → sadece basınç, kart açılır), tab filtresi, sayaç rozeti, kart genişleme + tablo hepsi çalışıyor.
 - **Deploy:** commit `cec817f` → `demo.mtaend.com`'a `git pull` + `public/build` scp + `view/config/route:cache`. Her iki sayfa canlıda HTTP 200.
 
+## 2026-09-02 — Ürünler Mega Menü + Mega Görselleri + Kapsam Sekmeleri + Kapsam Admin
+
+**Ürünler mega menü** (`layouts/site.blade.php`, Tailwind): 12-kolon grid. Sol 3 = ana kategori listesi (`text-[13px]`, ikon + chevron, `max-h-[440px]` + `.mega-scroll` ince scrollbar, `border-r`). Sağ 9 = hover edilen kategoriye göre değişen panel: orta 6 (alt kategori 2-kolon nokta-mermili grid + "Öne Çıkan {kategori} Markaları" çipleri) + sağ 3 (görselli öne çıkan kart: "ÖNE ÇIKAN SERİ" badge + ürün adı + `h-28` beyaz kutuda ürün foto + teal "Kataloğu & Fiyatları İncele" butonu). `app.js` `setupProductMega()` — `[data-mega-cat]` hover/focus → `[data-mega-panel]` toggle + `aria-selected`. `AppServiceProvider` view composer `megaFeatureProducts` (kategori slug → ilk görselli ürün {image,name}, `layouts.site`'a inject). Marka çipleri: `config('mta.product_category_brands')` (slug→brand slug[]) + `product_brands`.
+
+**Kalibrasyon + Teknik Servis mega** `.mega-hero` aside'larına görsel eklendi (`images/services/mta-kalibrasyon-banner-10.webp` / `images/technical-service/laboratuvar-cihazlari-teknik-servis.webp`) + kısa açıklama satırı.
+
+**Kapsam sekmeleri** (`pages/scope.blade.php`): yatay `overflow-x-auto` → `flex flex-wrap` (ekrana sığıyor, 2 satıra kadar sarar). `.scope-tab` daha kompakt (13px, `padding .4rem .85rem`).
+
+**Kapsam admin yönetilebilir:**
+- Migration `2026_09_02_090000_create_scope_tables`: `scope_categories` (slug, icon, title, summary, sort_order, is_active) + `scope_groups` (scope_category_id FK, key, title, `columns` json, `rows` json, sort_order, is_active).
+- Modeller: `ScopeCategory` (hasMany groups), `ScopeGroup` (columns/rows → array cast).
+- `php artisan mta:sync-scope` — `config/mta-scope.php` → DB. **Varsayılan: sadece eksikleri ekler** (admin düzenlemeleri korunur). `--force` config değeriyle ezer, `--fresh` sıfırlar.
+- `SiteController::scopeCategoriesData()` — `scope_categories` tablosu doluysa DB'den (ilişkili gruplarla), yoksa `config('mta-scope.categories')` fallback. `scope()` bunu kullanır; Blade veri şekli değişmedi.
+- Filament (`İçerik` grubu): **Kapsam Kategorileri** (`/admin/scope-categories`) + **Kapsam Grupları** (`/admin/scope-groups`). Grup formunda `columns` = TagsInput, `rows` = Textarea (satır başı bir ölçüm satırı, hücreler `" | "` ayraçlı; `formatStateUsing`/`dehydrateStateUsing` closure ile metin ↔ `array[][]`).
+
+### Doğrulama
+- `php artisan test` 13/13, `npm run build` OK, `php -l` tüm dosyalar temiz.
+- Yerelde: mega hover → panel değişimi + görselli kart (gerçek ürün foto) + marka çipleri çalışıyor; Kalibrasyon/Teknik Servis mega görselli; Kapsam sekmeleri sarıyor; `/kapsam` DB'den render (83 grup); Filament'e `dev@mta.local` ile girildi, Kapsam Grupları listesi + edit formu (rows textarea pipe-formatlı) doğrulandı.
+- **Deploy:** commit `1c31e76` → `demo.mtaend.com`: `git pull` + `public/build` scp + `migrate --force` + `mta:sync-scope` (10 kat / 83 grup) + `optimize:clear` + `view/config/route:cache` + `filament:optimize`. `/kapsam` 200, `/admin/scope-*` 302 (kayıtlı).
+- **Canlı yayında** `mta:sync-content` çalıştırılırsa kapsam etkilenmez (ayrı komut). Kapsam'ı config'ten tazelemek için `mta:sync-scope --force`.
+- Not: `tools/seed-*.php` gibi Filament dışı scriptler yok; kapsam düzenlemesi tamamen panelden.
+
 ## YAPILACAKLAR (yeni sohbette devam)
 
 Aşağıdaki iş bu turda **yapılmadı** — kullanıcı ayrıntılı tasarım brief'i verdi, odaklı bir tur gerektirir:
