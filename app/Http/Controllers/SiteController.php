@@ -24,15 +24,77 @@ class SiteController extends Controller
 {
     public function home()
     {
+        $metaTitle = 'Kalibrasyon Hizmetleri ve Laboratuvar Cihazları | MTA Endüstri';
+        $metaDescription = 'MTA Endüstri; kalibrasyon hizmetleri, laboratuvar cihazları teknik servis desteği ve marka bazlı teknik ürün kataloğu sunar.';
+        $products = collect($this->productsData());
+
+        // Öne çıkan kategori çipleri: temsili görsel = eşleşen ilk ürün görseli.
+        // Görselli kategoriler önce gelir; en fazla 6 çip gösterilir.
+        $imagedProducts = $products->filter(fn ($p) => ! empty($p['image']))->values();
+        $categoryImage = function (string $slug, array $keywords) use ($imagedProducts) {
+            $hit = $imagedProducts->first(fn ($p) => ($p['category_slug'] ?? null) === $slug);
+            if (! $hit) {
+                $hit = $imagedProducts->first(function ($p) use ($keywords) {
+                    $hay = Str::lower(($p['category_slug'] ?? '') . ' ' . ($p['category'] ?? ''));
+                    foreach ($keywords as $kw) {
+                        if (Str::contains($hay, $kw)) return true;
+                    }
+                    return false;
+                });
+            }
+            return $hit['image'] ?? null;
+        };
+
+        $featuredCategories = collect([
+            ['slug' => 'teraziler', 'name' => 'Teraziler', 'kw' => ['terazi']],
+            ['slug' => 'nem-tayin', 'name' => 'Nem Tayin', 'kw' => ['nem']],
+            ['slug' => 'titratorler', 'name' => 'Titratörler', 'kw' => ['titr', 'fischer']],
+            ['slug' => 'viskozimetre', 'name' => 'Viskozimetre', 'kw' => ['visko']],
+            ['slug' => 'ph-metre', 'name' => 'pH Metreler', 'kw' => ['ph metre', 'ph-metre', 'iletkenlik']],
+            ['slug' => 'santrifujler', 'name' => 'Santrifüjler', 'kw' => ['santrifuj', 'santrifüj']],
+            ['slug' => 'manyetik-karistirici', 'name' => 'Manyetik Karıştırıcılar', 'kw' => ['manyetik kar', 'karistir']],
+            ['slug' => 'homojenizator', 'name' => 'Homojenizatörler', 'kw' => ['homojen']],
+        ])->map(fn (array $c) => [
+            'name' => $c['name'],
+            'url' => route('products.category', $c['slug']),
+            'image' => $categoryImage($c['slug'], $c['kw']),
+        ]);
+
+        $featuredCategories = $featuredCategories->filter(fn ($c) => $c['image'])
+            ->concat($featuredCategories->filter(fn ($c) => ! $c['image']))
+            ->take(6)
+            ->values()
+            ->all();
+
+        $brandLogoDir = public_path('images/brands');
+        $partnerBrands = collect([
+            'shimadzu' => 'Shimadzu',
+            'weightlab' => 'Weightlab',
+            'velp' => 'VELP',
+            'lamy' => 'Lamy Rheology',
+            'mettler-toledo' => 'Mettler Toledo',
+            'ohaus' => 'Ohaus',
+            'kyoto-kem' => 'Kyoto KEM',
+            'bellingham-stanley' => 'Bellingham + Stanley',
+        ])->filter(fn ($name, $slug) => is_file($brandLogoDir . '/' . $slug . '.png'))
+            ->map(fn ($name, $slug) => [
+                'name' => $name,
+                'logo' => 'images/brands/' . $slug . '.png',
+                'url' => route('products.brand', $slug),
+            ])->values()->all();
+
         return view('pages.home', [
-            'meta' => $this->meta('Kalibrasyon Hizmetleri ve Laboratuvar Cihazları | MTA Endüstri', 'MTA Endüstri; kalibrasyon hizmetleri, laboratuvar cihazları teknik servis desteği ve marka bazlı teknik ürün kataloğu sunar.'),
+            'meta' => $this->meta($metaTitle, $metaDescription),
             'services' => $this->servicesData(),
             'technicalServices' => $this->technicalServicesData(),
-            'products' => $this->productsData(),
+            'products' => $products->all(),
             'articles' => $this->articlesData(),
             'faqs' => $this->faqsData(),
+            'featuredCategories' => $featuredCategories,
+            'partnerBrands' => $partnerBrands,
+            'genericQuoteCta' => $this->quoteCta('service', null, 'Toplu kalibrasyon teklifi', route('home')),
             'schema' => $this->schemaGraph([
-                $this->webPageSchema('Kalibrasyon Hizmetleri ve Laboratuvar Cihazları | MTA Endüstri', 'MTA Endüstri; kalibrasyon hizmetleri, laboratuvar cihazları teknik servis desteği ve marka bazlı teknik ürün kataloğu sunar.'),
+                $this->webPageSchema($metaTitle, $metaDescription),
             ]),
         ]);
     }

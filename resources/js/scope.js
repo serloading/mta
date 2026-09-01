@@ -3,9 +3,11 @@ export default function setupScope() {
     if (!toolbar) return;
 
     const chips = Array.from(toolbar.querySelectorAll('[data-scope-filter]'));
-    const search = toolbar.querySelector('[data-scope-search]');
+    const search = document.querySelector('[data-scope-search]');
+    const countBadge = document.querySelector('[data-scope-search-count]');
     const blocks = Array.from(document.querySelectorAll('[data-scope-block]'));
     const empty = document.querySelector('[data-scope-empty]');
+    const totalGroups = document.querySelectorAll('[data-scope-card]').length;
 
     let activeFilter = 'all';
 
@@ -19,6 +21,7 @@ export default function setupScope() {
     const apply = () => {
         const q = norm(search ? search.value : '');
         let anyVisible = false;
+        let visibleCards = 0;
 
         blocks.forEach((block) => {
             const catMatch = activeFilter === 'all' || block.dataset.cat === activeFilter;
@@ -28,7 +31,10 @@ export default function setupScope() {
                 const textMatch = q === '' || norm(card.textContent).includes(q);
                 const visible = catMatch && textMatch;
                 card.hidden = !visible;
-                if (visible) blockHasVisibleCard = true;
+                if (visible) {
+                    blockHasVisibleCard = true;
+                    visibleCards += 1;
+                }
                 if (q !== '' && textMatch && catMatch) {
                     card.open = true;
                 } else if (q === '') {
@@ -41,6 +47,10 @@ export default function setupScope() {
         });
 
         if (empty) empty.hidden = anyVisible;
+        if (countBadge) {
+            const filtering = q !== '' || activeFilter !== 'all';
+            countBadge.textContent = filtering ? `${visibleCards} sonuç` : `${totalGroups} grup`;
+        }
     };
 
     chips.forEach((chip) => {

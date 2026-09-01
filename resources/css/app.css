@@ -5305,271 +5305,31 @@ body.pdp-noscroll { overflow: hidden; }
     .clower-cta h2 { font-size: 21px; }
 }
 
-/* ============================ Kapsam sayfası (/kapsam) ============================ */
-.kapsam-hero {
-    background: var(--brand-navy-900);
-    color: #fff;
-    padding-block: clamp(2.5rem, 6vw, 4.5rem);
-    border-radius: 0 0 24px 24px;
-}
-
-.kapsam-hero .breadcrumb { margin-bottom: 1rem; }
-
-.kapsam-eyebrow {
-    display: inline-block;
-    font-size: .72rem;
-    font-weight: 700;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--brand-teal-100) 85%, white);
-    border: 1px solid rgba(255, 255, 255, .22);
-    border-radius: 999px;
-    padding: .35rem .75rem;
-    margin-bottom: 1rem;
-}
-
-.kapsam-hero h1 {
-    font-size: clamp(1.9rem, 3.6vw, 2.9rem);
-    line-height: 1.12;
-    margin: 0 0 .8rem;
-}
-
-.kapsam-hero p {
-    max-width: 60ch;
-    color: rgba(255, 255, 255, .82);
-    margin: 0;
-}
-
-.kapsam-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .6rem 1.6rem;
-    margin-top: 1.6rem;
-    font-size: .92rem;
-    color: rgba(255, 255, 255, .78);
-}
-
-.kapsam-stats strong {
-    color: #fff;
-    font-size: 1.15rem;
-    margin-right: .3rem;
-}
-
-.kapsam-toolbar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-}
-
-@media (min-width: 1024px) {
-    .kapsam-toolbar {
-        position: sticky;
-        top: 73px;
-        z-index: 120;
-        background: color-mix(in srgb, var(--surface) 94%, transparent);
-        backdrop-filter: blur(8px);
-    }
-}
-
-.kapsam-toolbar-inner {
-    display: flex;
-    flex-direction: column;
-    gap: .85rem;
-    padding-block: .85rem;
-}
-
-.kapsam-search {
-    display: flex;
-    align-items: center;
-    gap: .55rem;
-    background: var(--surface-muted);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: .55rem .8rem;
-}
-
-.kapsam-search svg { width: 18px; height: 18px; color: var(--text-muted); flex: none; }
-
-.kapsam-search input {
-    flex: 1;
-    border: 0;
-    background: transparent;
-    font: inherit;
-    color: var(--text);
-    outline: none;
-    min-width: 0;
-}
-
-.kapsam-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .5rem;
-}
-
-.kapsam-chip {
-    border: 1px solid var(--border-strong);
-    background: var(--surface);
-    color: var(--text);
-    font: inherit;
-    font-size: .86rem;
-    font-weight: 600;
-    padding: .4rem .8rem;
-    border-radius: 999px;
-    cursor: pointer;
+/* ============================ Kapsam sayfası (/kapsam) tab bileşeni ============================ */
+.scope-tab {
+    flex: none;
     white-space: nowrap;
-    transition: background .15s ease, border-color .15s ease, color .15s ease;
-}
-
-.kapsam-chip:hover { border-color: var(--brand-teal-500); color: var(--brand-teal-700); }
-
-.kapsam-chip.is-active {
-    background: var(--brand-teal-500);
-    border-color: var(--brand-teal-500);
-    color: #fff;
-}
-
-.kapsam-block { margin-bottom: clamp(2.5rem, 5vw, 3.75rem); scroll-margin-top: 180px; }
-.kapsam-card { scroll-margin-top: 180px; }
-.kapsam-block[hidden] { display: none; }
-
-.kapsam-block-head {
-    display: flex;
-    align-items: flex-start;
-    gap: .9rem;
-    padding-bottom: 1rem;
-    margin-bottom: 1.25rem;
-    border-bottom: 2px solid var(--border);
-}
-
-.kapsam-block-ico {
-    font-size: 1.7rem;
-    line-height: 1;
-    flex: none;
-}
-
-.kapsam-block-head h2 {
-    font-size: clamp(1.35rem, 2.4vw, 1.8rem);
-    color: var(--text-strong);
-    margin: 0 0 .2rem;
-}
-
-.kapsam-block-head p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: .92rem;
-}
-
-.kapsam-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: .75rem;
-}
-
-@media (min-width: 900px) {
-    .kapsam-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
-}
-
-.kapsam-card {
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    overflow: hidden;
-}
-
-.kapsam-card[hidden] { display: none; }
-.kapsam-card[open] { grid-column: 1 / -1; box-shadow: var(--shadow-soft); border-color: var(--border-strong); }
-
-.kapsam-card > summary {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-    padding: .95rem 1.05rem;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    font: inherit;
+    font-size: .875rem;
+    font-weight: 500;
+    padding: .5rem 1.25rem;
+    border-radius: 9999px;
     cursor: pointer;
-    list-style: none;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.scope-tab:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.scope-tab.is-active {
+    background: #0f766e;
+    border-color: #0f766e;
+    color: #ffffff;
     font-weight: 600;
-    color: var(--text-strong);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .08);
 }
-
-.kapsam-card > summary::-webkit-details-marker { display: none; }
-
-.kapsam-card-title { flex: 1; line-height: 1.35; }
-
-.kapsam-card-meta {
-    flex: none;
-    font-size: .78rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    background: var(--surface-muted);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: .15rem .55rem;
-}
-
-.kapsam-card-caret {
-    flex: none;
-    width: 18px;
-    height: 18px;
-    color: var(--text-muted);
-    transition: transform .18s ease;
-}
-
-.kapsam-card[open] .kapsam-card-caret { transform: rotate(180deg); }
-
-.kapsam-card-body {
-    padding: 0 1.05rem 1.1rem;
-    border-top: 1px solid var(--border);
-}
-
-.kapsam-table-wrap {
-    overflow-x: auto;
-    margin: 1rem 0 1.1rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-}
-
-.kapsam-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: .86rem;
-}
-
-.kapsam-table th,
-.kapsam-table td {
-    padding: .55rem .7rem;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-}
-
-.kapsam-table thead th {
-    background: var(--surface-muted);
-    color: var(--text-strong);
-    font-weight: 700;
-    position: sticky;
-    top: 0;
-}
-
-.kapsam-table tbody tr:last-child td { border-bottom: 0; }
-.kapsam-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--surface-muted) 55%, transparent); }
-
-.kapsam-muted { color: var(--text-muted); }
-
-.kapsam-card-quote { width: fit-content; font-size: .88rem; }
-
-.kapsam-empty {
-    padding: 2rem 1rem;
-    text-align: center;
-    color: var(--text-muted);
-    border: 1px dashed var(--border-strong);
-    border-radius: var(--radius-sm);
-}
-
-.kapsam-note {
-    margin-top: 2rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--border);
-    font-size: .85rem;
-    color: var(--text-muted);
-    line-height: 1.7;
-}
-
-.kapsam-note a { color: var(--brand-teal-700); }
