@@ -2463,9 +2463,42 @@ Deploy sırasında Vercel `npm run build` şu hatayı verdi: `Can't resolve '../
 - İstenirse `/kapsam` için özel SEO meta/H1 + SeoEntry admin kaydı; sayfaya JSON-LD `Service`/`OfferCatalog` şeması eklenebilir.
 - Kapsam PDF (TR/EN) linkleri hero'ya eklenebilir (dosyalar gelince).
 
+## 2026-09-02 — Ana Sayfa + Kapsam Sayfası Yeniden Tasarımı (Tailwind)
+
+Kullanıcı iki ayrıntılı B2B/CRO tasarım brief'i verdi (design token'lar + section section layout). İkisi de **Tailwind utility** ile yeniden kodlandı — `@import 'tailwindcss'` + `@source '../views/**/*.blade.php'` zaten aktif, blade içi utility'ler derleniyor (probe ile doğrulandı).
+
+**`resources/views/pages/home.blade.php`** — tam yeniden yazıldı, 7 bölüm:
+1. Dark split hero (`bg-slate-900 rounded-3xl`, col-7/col-5), gömülü arama formu (`route('search')`), amber "Hızlı Teklif İste" + outline "Ürün Kataloğu", sağda 3 metrikli güven kartı.
+2. 3 akredite hizmet kartı — **tüm kart `<a>` (tam tıklanır)**, ikon + bullet + "Hizmet Kapsamını Gör" (ayrı buton yok).
+3. Görselli kategori çip grid (`grid-cols-2 md:4 lg:6`), 80×80 `object-contain`.
+4. Grayscale→renkli marka ribbon.
+5. `bg-slate-50 rounded-3xl` "Neden MTA" — 4 icon-benefit kartı.
+6. 2 kolon: SSS `<details>` akordiyonu + 2 görselli blog kartı.
+7. Dark alt banner, **tek** teal CTA.
+Eski parçalı SEO metin blokları (`credential-band`, `lab-section`, `sector-grid`, süreç vb.) kaldırıldı.
+
+**`SiteController::home()`** güncellendi: `featuredCategories` (görsel = kategoriye/anahtar kelimeye eşleşen ilk ürün foto; görsel yoksa ikon fallback, görselli olanlar öne alınır, ilk 6) + `partnerBrands` (`public/images/brands/*.png` olanlar) + `genericQuoteCta`.
+
+**`resources/views/pages/scope.blade.php`** — tam yeniden yazıldı:
+1. Dark hero içine **gömülü instant search** (56px, beyaz, shadow-2xl) + sağda sonuç sayacı rozeti.
+2. **Sticky teal kategori tab bar** (`sticky top-[68px]`) — eski ayrı `.kapsam-toolbar` "ikinci nav şeridi" kaldırıldı, arama hero'ya taşındı.
+3. Kategori bölümleri: ikon + "{Kategori} Kalibrasyonları" + emerald "N cihaz grubu kapsamda" rozeti; `grid md:grid-cols-2` genişleyebilir `<details>` kartlar — özet (aralık/belirsizlik + satır sayısı) + açılınca tam tablo (`open:md:col-span-2` tam genişlik) + "Kapsam İçin Teklif Al →".
+4. Kapsam-dışı destek bandı: WhatsApp + "Özel Cihaz Listesi İletin".
+5. Dark alt CTA, tek teal buton.
+`groupSummary()` blade closure: kolon başlıklarından "aralık"/"belirsizlik" sütununu bulup ilk–son satırdan özet üretir.
+
+**`resources/js/scope.js`**: `search` artık `document.querySelector('[data-scope-search]')` (hero'da), `[data-scope-search-count]` rozeti "N grup" / "N sonuç" olarak güncellenir. `data-scope-*` hook'ları ve `is-active` toggle mantığı korundu.
+
+**`resources/css/app.css`**: eski `.kapsam-*` bloğu (267 satır) silindi → `.scope-tab` + `.scope-tab.is-active` (teal-700) bileşeni eklendi.
+
+### Doğrulama
+- `php artisan test` 13/13, `npm run build` OK (app.css 135→144 KB). Konsol hatası yok.
+- Yerelde DOM/JS ile doğrulandı: home 7 bölüm render, kategori çipleri 4/6 gerçek ürün fotosu (titratör/viskozimetre demo DB'de görselli ürün yok → ikon fallback); kapsam instant search ("manometre" → sadece basınç, kart açılır), tab filtresi, sayaç rozeti, kart genişleme + tablo hepsi çalışıyor.
+- **Deploy:** commit `cec817f` → `demo.mtaend.com`'a `git pull` + `public/build` scp + `view/config/route:cache`. Her iki sayfa canlıda HTTP 200.
+
 ## YAPILACAKLAR (yeni sohbette devam)
 
-Aşağıdaki 2 iş bu turda **yapılmadı** — kullanıcı ayrıntılı tasarım brief'lerini verdi, her biri odaklı bir tur gerektirir:
+Aşağıdaki iş bu turda **yapılmadı** — kullanıcı ayrıntılı tasarım brief'i verdi, odaklı bir tur gerektirir:
 
 ### 1. Kalibrasyon / Teknik Servis Hizmet Detay sayfası yeniden tasarımı
 `resources/views/pages/service-detail.blade.php` ve `technical-service-detail.blade.php`. Brief özeti:
@@ -2475,18 +2508,7 @@ Aşağıdaki 2 iş bu turda **yapılmadı** — kullanıcı ayrıntılı tasarı
 - **D.** Minimal SSS akordiyonu (`max-w-3xl`) + 2'li ilişkili hizmet/bakım-onarım kartı.
 - **E.** Dark navy alt banner — **tek buton** ("Listeni Yükle / Teklif Al").
 - Tokens: Teal-700 primary, `#0F172A` dark, Amber-600 accent badge, Slate paleti. Çizgi ikonlar (1.5px stroke).
-
-### 2. Ana Sayfa yeniden tasarımı
-`resources/views/pages/home.blade.php`. Brief özeti:
-- Container: `max-w-[1320px]` (artık global `.container` bunu veriyor).
-- **S1. Split hero:** `grid lg:grid-cols-12`, `bg-slate-900 text-white rounded-3xl p-8 lg:p-12`. Sol (`col-7`): mono badge ("TÜRKAK AKREDİTE KALİBRASYON & YETKİLİ SERVİS"), H1 ("Endüstriyel Ölçüm Cihazları, Kalibrasyon ve Teknik Servis Çözümleri"), **gömülü geniş canlı arama** ("Cihaz adı, model kodu veya kalibrasyon türü ara…"), "Hızlı Teklif İste" (amber) + "Ürün Kataloğu" (outline). Sağ (`col-5`): `bg-slate-800/80` istatistik kartı — `15.000+ Kalibre Cihaz`, `500+ Kurumsal Referans`, `%99.8 Memnuniyet`.
-- **S2.** 3 ana hizmet kartı (`md:grid-cols-3`, `hover:border-teal-500 hover:shadow-lg group`, tüm kart tıklanır).
-- **S3.** Öne çıkan cihaz kataloğu — `grid grid-cols-2 md:4 lg:6`, görselli kategori çipleri (80×80 `object-contain`, beyaz zemin, alt başlık). "Tüm Ürünleri İncele →".
-- **S4.** Marka logo ribbon — `grayscale hover:grayscale-0`, Shimadzu/Weightlab/Velp/Lamy...
-- **S5.** "Neden MTA Endüstri?" — `bg-slate-50 rounded-3xl py-16`, `md:grid-cols-4` icon-benefit kartları (TÜRKAK Akredite / Hızlı Servis / Orijinal Yedek Parça / Uzman Kadro).
-- **S6.** 2 kolon: sol SSS akordiyonu, sağ 2 görselli blog/rehber kartı.
-- **S7.** Dark navy alt lead banner — **tek büyük CTA** ("Toplu Teklif Talebi Oluştur").
-- **Temizlik:** alttaki ~10 yan yana SEO metin kutusu kaldırılacak; bilgi SSS + icon-benefit kartlarına dağıtılacak. Tüm "İncele >" butonları kaldırılıp kartlar tam tıklanır yapılacak. Çizgi ikon dili (1.5px stroke).
+- Not: Ana Sayfa ve Kapsam sayfaları 2026-09-02'de Tailwind ile bu dile geçirildi; hizmet/teknik servis detay bu turda aynı token seti + `pages/home.blade.php` / `pages/scope.blade.php` referans alınarak yapılabilir.
 
 ### Genel notlar (yeni sohbet için)
 - `php artisan serve` port 8000'de zaten çalışıyor (kullanıcının terminali). Cache'ler: geliştirme için `view:cache` yapılmadı (blade hot-reload); `filament:optimize` aktif tutulmalı.
