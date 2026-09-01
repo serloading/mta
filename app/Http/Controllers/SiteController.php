@@ -165,6 +165,36 @@ class SiteController extends Controller
         ]);
     }
 
+    public function scope()
+    {
+        $scope = config('mta-scope');
+        $categories = $scope['categories'] ?? [];
+
+        $groupCount = collect($categories)->sum(fn ($cat) => count($cat['groups'] ?? []));
+        $rowCount = collect($categories)
+            ->flatMap(fn ($cat) => $cat['groups'] ?? [])
+            ->sum(fn ($group) => count($group['rows'] ?? []));
+
+        $metaTitle = 'Kalibrasyon Kapsamımız | MTA Endüstri';
+        $metaDescription = 'MTA Endüstri kalibrasyon kapsamları: cihaz grupları, ölçüm aralıkları, '
+            . 'genişletilmiş ölçüm belirsizliği (U, k=2) ve uygulanan metot/standartlar.';
+
+        return view('pages.scope', [
+            'meta' => $this->meta($metaTitle, $metaDescription),
+            'scopeCategories' => $categories,
+            'scopeNote' => $scope['note'] ?? '',
+            'scopeStats' => ['categories' => count($categories), 'groups' => $groupCount, 'rows' => $rowCount],
+            'genericQuoteCta' => $this->quoteCta('service', null, 'Kalibrasyon kapsamı', route('scope')),
+            'schema' => $this->schemaGraph([
+                $this->webPageSchema($metaTitle, $metaDescription),
+                $this->breadcrumbSchema([
+                    ['name' => 'Ana Sayfa', 'url' => route('home')],
+                    ['name' => 'Kapsam', 'url' => route('scope')],
+                ]),
+            ]),
+        ]);
+    }
+
     public function products(Request $request)
     {
         $productsSeo = $this->productsPageSeoContent();
@@ -842,6 +872,7 @@ class SiteController extends Controller
         $urls = collect([
             '/',
             '/hizmetler',
+            '/kapsam',
             '/urunler',
             '/markalar',
             '/teknik-servis',

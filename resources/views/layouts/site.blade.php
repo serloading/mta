@@ -232,6 +232,7 @@
                     </div>
                 </div>
 
+                <a class="mb-nav-link" href="{{ route('scope') }}">Kapsam</a>
                 <a class="mb-nav-link" href="{{ route('contact') }}">İletişim</a>
             </nav>
 
@@ -267,6 +268,7 @@
             @foreach(config('mta.technical_services') as $item)
                 <a class="md-sub" href="{{ route('technical-services.show', $item['slug']) }}">{{ $item['title'] }}</a>
             @endforeach
+            <a href="{{ route('scope') }}">Kapsam</a>
             <a href="{{ route('about') }}">Kurumsal</a>
             <a href="{{ route('certificates') }}">Sertifikalar</a>
             <a href="{{ route('blog.index') }}">Blog</a>
@@ -318,6 +320,7 @@
                 @foreach(config('mta.services') as $service)
                     <li><a href="{{ route('services.show', $service['slug']) }}">{{ $service['title'] }}</a></li>
                 @endforeach
+                <li><a href="{{ route('scope') }}">Kalibrasyon Kapsamı</a></li>
             </ul>
         </div>
 

@@ -1,7 +1,14 @@
+import { existsSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';
 import tailwindcss from '@tailwindcss/vite';
+
+// The Filament admin theme @imports a file from vendor/. Only build it when
+// Composer dependencies are present (skips cleanly on frontend-only CI builds
+// where `composer install` has not run, e.g. Vercel).
+const filamentThemeEntry = 'resources/css/filament/admin/theme.css';
+const hasFilamentVendor = existsSync('vendor/filament/filament/resources/css/theme.css');
 
 export default defineConfig({
     plugins: [
@@ -9,7 +16,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                'resources/css/filament/admin/theme.css',
+                ...(hasFilamentVendor ? [filamentThemeEntry] : []),
             ],
             refresh: true,
             fonts: [

@@ -2430,6 +2430,39 @@ Sorgular hızlıydı (~9ms). 30sn timeout = `php artisan serve` tek-thread + `fi
 - `git init` → commit `c38eef2` → `origin https://github.com/serloading/mta.git` → `push -u origin main` başarılı.
 - Git identity: `serca` / `theprofiterol@gmail.com`.
 
+## 2026-09-01 — Kapsam Sayfası (/kapsam) + Menüye Ekleme
+
+Kullanıcı, referans olarak UMS Ankara `hizmetler.php` HTML'ini vererek 10 ölçüm alanı başlığı altında akredite kalibrasyon kapsam tablolarını içeren bir "Kapsam" sayfası istedi. İçerik (cihaz grupları, ölçüm aralıkları, U (k=2), metot/standart) o koddan alındı; UMS marka/akreditasyon no/PDF/iletişim bilgileri **alınmadı**, MTA tasarım diline uyarlandı.
+
+### Eklenen / Değiştirilen Dosyalar
+
+- `config/mta-scope.php` — **YENİ.** `['note' => ..., 'categories' => [...]]`. 10 kategori, 83 cihaz grubu, ~551 aralık satırı. Her grup: `id`, `title`, `columns[]`, `rows[]` (hücre sayısı `columns` ile birebir; `—` ön yüzde muted). Kategori slug'ları filtre chip'i ile eşleşir: `sicaklik, boyut, basinc, kutle, sertlik, hacim, tork, yogunluk, zaman, malzeme`. **Not: değerler örnek kapsam; laboratuvarın güncel TÜRKAK kapsamıyla teyit edilmeli.**
+- `routes/web.php` — `Route::get('/kapsam', [SiteController::class, 'scope'])->name('scope');` (teknik-servis rotalarından hemen sonra, `/{any}` fallback'inden önce).
+- `app/Http/Controllers/SiteController.php` — `scope()` metodu (`products()` üstüne eklendi). Meta + breadcrumb/WebPage schema + `genericQuoteCta` (`quoteCta('service', null, ...)`). `scopeStats` (kategori/grup/satır sayısı) view'a geçer. `sitemap()` statik URL listesine `/kapsam` eklendi.
+- `resources/views/pages/scope.blade.php` — **YENİ.** Dark hero (`.kapsam-hero`, navy, `radius 0 0 24px 24px`) + breadcrumb + istatistik satırı. `.kapsam-toolbar`: arama input + filtre chip'leri (Tümü + 10 kategori). Her kategori `.kapsam-block[data-scope-block][data-cat]` → `.kapsam-block-head` (emoji + h2 + `summary · N grup`) + `.kapsam-grid` içinde `<details.kapsam-card[data-scope-card]>` (summary: başlık + `N satır` rozeti + caret; body: `.kapsam-table-wrap > table.kapsam-table` + "Bu gruptan teklif iste →" butonu → `route('quote', ['source_type'=>'service','source_name'=>'Kapsam: '.$group['title']])`). Alt: `.kapsam-empty` (arama sonuç yok) + `.kapsam-note` (`{!! $scopeNote !!}`) + `.cta-band`.
+- `resources/css/app.css` — dosya sonuna `/* Kapsam sayfası */` bloğu. `.kapsam-toolbar` yalnızca `≥1024px`'te `position:sticky; top:73px` (header yüksekliği 73px; mobilde sticky değil — çift sticky çakışmasını önler). `.kapsam-card[open]` grid'de `1 / -1` (tam genişlik). `.kapsam-table-wrap { overflow-x:auto }` responsive.
+- `resources/js/scope.js` — **YENİ**, `app.js` içinde `setupScope()` olarak import edildi. Filtre chip'i: aktif class + blokları `hidden` ile göster/gizle + hedefe smooth scroll (offset = header + toolbar yüksekliği). Arama: 140ms debounce, `data-scope-card` metninde (tr-locale normalize) arar; eşleşen kartları `open=true` yapar, kartsız blokları gizler, hiç sonuç yoksa `.kapsam-empty` gösterir. `#grup-id` hash deep-link ile o kartı açar.
+- `resources/views/layouts/site.blade.php` — "Kapsam" linki: desktop nav'da İletişim'den önce; mobil drawer'da Kurumsal'dan önce; footer "Hizmetler" sütununda "Kalibrasyon Kapsamı" olarak.
+
+### Doğrulama
+
+- `php -l` (config + controller) temiz. `php artisan test` → 13/13. `npm run build` → başarılı (yalnızca mevcut `fontaine` uyarısı).
+- `/kapsam` → 200, başlık "Kalibrasyon Kapsamımız | MTA Endüstri". Konsol hatası yok. DOM ölçümleri: header 0-73, hero 73-525, toolbar, section 5046px, CTA, footer — sıralı, taşma yok.
+- JS ile test edildi: "Basınç" filtresi → sadece `basinc` bloğu; arama "ISO 6789" → sadece Tork kartı (açık), empty gizli; "zzzznomatch" → 0 blok, empty görünür. Teklif linki `/teklif-al?source_type=service&source_name=Kapsam:...` → 200.
+- Not: Browser pane'de uzun sayfa scroll-sonrası screenshot yine boş/beyaz döndü (bilinen sorun); doğrulama `javascript_tool` DOM/computed-style ile yapıldı.
+
+### Ek: Vercel build hatası düzeltmesi (`vite.config.js`)
+
+Deploy sırasında Vercel `npm run build` şu hatayı verdi: `Can't resolve '../../../../vendor/filament/filament/resources/css/theme.css'`. Sebep: Vercel frontend-only build yapıyor, `composer install` çalışmadığı için `vendor/` yok; `resources/css/filament/admin/theme.css` bu vendor dosyasını `@import` ediyor. (Bu, Kapsam işiyle ilgisiz, ilk commit'ten beri var olan bir sorun.)
+
+Çözüm: `vite.config.js` artık Filament tema girdisini yalnızca `vendor/filament/filament/resources/css/theme.css` diskte varsa `input`'a ekliyor (`node:fs` `existsSync`). Yerelde (vendor var) → tema derlenir, admin paneli stilli. Vercel'de (vendor yok) → atlanır, build geçer. Zaten Filament admin Vercel'den sunulmuyor. Test: vendor css geçici taşındığında `npm run build` EXIT 0; geri konunca `theme-*.css` yine üretiliyor.
+
+### Kalan / İyileştirme Notları
+
+- `config/mta-scope.php` içindeki U/aralık/metot değerleri referans HTML'den birebir alındı; **MTA'nın gerçek akreditasyon kapsamıyla analist teyidi gerekir.** İkinci fazda bu veri DB'ye (ör. `scope_categories` / `scope_groups` tabloları + Filament resource) taşınabilir.
+- İstenirse `/kapsam` için özel SEO meta/H1 + SeoEntry admin kaydı; sayfaya JSON-LD `Service`/`OfferCatalog` şeması eklenebilir.
+- Kapsam PDF (TR/EN) linkleri hero'ya eklenebilir (dosyalar gelince).
+
 ## YAPILACAKLAR (yeni sohbette devam)
 
 Aşağıdaki 2 iş bu turda **yapılmadı** — kullanıcı ayrıntılı tasarım brief'lerini verdi, her biri odaklı bir tur gerektirir:

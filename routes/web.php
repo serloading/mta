@@ -8,6 +8,7 @@ Route::get('/hizmetler', [SiteController::class, 'services'])->name('services.in
 Route::get('/hizmetler/{slug}', [SiteController::class, 'serviceDetail'])->name('services.show');
 Route::get('/teknik-servis', [SiteController::class, 'technicalServices'])->name('technical-services.index');
 Route::get('/teknik-servis/{slug}', [SiteController::class, 'technicalServiceDetail'])->name('technical-services.show');
+Route::get('/kapsam', [SiteController::class, 'scope'])->name('scope');
 Route::get('/urunler', [SiteController::class, 'products'])->name('products.index');
 Route::get('/urun/{slug}', [SiteController::class, 'productDetail'])->name('products.show');
 Route::get('/markalar', [SiteController::class, 'brands'])->name('brands.index');

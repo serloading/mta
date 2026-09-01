@@ -1,11 +1,13 @@
 import setupCatalog from './catalog.js';
 import setupPdp from './pdp.js';
 import setupHeader from './header.js';
+import setupScope from './scope.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     setupCatalog();
     setupPdp();
     setupHeader();
+    setupScope();
 
     const megaItems = Array.from(document.querySelectorAll('.mega-nav-item'));
     const hoverPointer = window.matchMedia('(hover: hover) and (pointer: fine)');
