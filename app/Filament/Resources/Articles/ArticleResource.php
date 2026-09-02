@@ -73,19 +73,37 @@ class ArticleResource extends Resource
                         ->required(),
                     DateTimePicker::make('published_at')
                         ->label('Yayın tarihi')
-                        ->seconds(false),
-                    TextInput::make('category')
+                        ->seconds(false)
+                        ->default(now())
+                        ->helperText('İleri tarih verirseniz yazı o tarihte otomatik yayınlanır.'),
+                    Select::make('category')
                         ->label('Kategori')
-                        ->maxLength(255),
+                        ->options([
+                            'Kalibrasyon Rehberleri' => 'Kalibrasyon Rehberleri',
+                            'Satın Alma Rehberleri' => 'Satın Alma Rehberleri',
+                            'Cihaz Tanıtımları' => 'Cihaz Tanıtımları',
+                            'Teknik Servis ve Bakım' => 'Teknik Servis ve Bakım',
+                            'Ölçüm Güvenilirliği' => 'Ölçüm Güvenilirliği',
+                            'Sektör ve Uygulama' => 'Sektör ve Uygulama',
+                            'Haberler' => 'Haberler',
+                        ])
+                        ->searchable()
+                        ->required()
+                        ->live()
+                        ->afterStateUpdated(fn ($state, callable $set) => $set('category_slug', Str::slug((string) $state))),
                     TextInput::make('category_slug')
                         ->label('Kategori kısa bağlantı adı')
-                        ->maxLength(255),
+                        ->required()
+                        ->maxLength(255)
+                        ->helperText('Kategori seçilince otomatik dolar; gerekirse düzenleyin.'),
                     TextInput::make('author')
                         ->label('Yazar')
+                        ->default('MTA Teknik Editör')
                         ->maxLength(255),
                     TextInput::make('reading_time')
                         ->label('Okuma süresi')
-                        ->placeholder('4 dk okuma')
+                        ->placeholder('4 dk')
+                        ->helperText('Boş bırakılırsa içerik uzunluğundan otomatik hesaplanır.')
                         ->maxLength(255),
                     Repeater::make('tags')
                         ->label('Etiketler')

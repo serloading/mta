@@ -30,6 +30,21 @@ class Article extends Model
         static::updating(function (Article $article): void {
             $article->updated_by = Auth::id();
         });
+
+        static::saving(function (Article $article): void {
+            // Okuma süresi boşsa içerik uzunluğundan hesapla (~180 kelime/dk).
+            if (blank($article->reading_time) && filled($article->body)) {
+                $words = str_word_count(strip_tags((string) $article->body));
+                $article->reading_time = max(1, (int) ceil($words / 180)) . ' dk';
+            }
+        });
+    }
+
+    /** Yayında ve yayın tarihi gelmiş yazılar. */
+    public function scopeLive($query)
+    {
+        return $query->where('status', 'published')
+            ->where(fn ($q) => $q->whereNull('published_at')->orWhere('published_at', '<=', now()));
     }
 
     public function faqs(): MorphMany

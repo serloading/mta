@@ -85,15 +85,11 @@
                             @endforeach
                         </div>
                     @endif
+                @elseif(! empty($article['body']))
+                    {{-- Adminden yazılan içerik (RichEditor HTML) --}}
+                    {!! $article['body'] !!}
                 @else
-                    <h2>Detaylı Açıklama</h2>
-                    <p>Bu makale yayın öncesinde gerçek uzman içeriği, kaynaklar, ilgili hizmet ve ürün ilişkileriyle zenginleştirilecektir.</p>
-                    <h2>İlgili Hizmetler</h2>
-                    <ul>
-                        @foreach($services as $service)
-                            <li><a href="{{ route('services.show', $service['slug']) }}">{{ $service['title'] }}</a></li>
-                        @endforeach
-                    </ul>
+                    <p class="text-slate-500">Bu yazının içeriği hazırlanıyor.</p>
                 @endif
             </article>
         </div>

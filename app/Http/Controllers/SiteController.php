@@ -1513,7 +1513,7 @@ class SiteController extends Controller
 
         if ($this->canReadTable('articles') && Article::query()->exists()) {
             $articles = Article::query()
-                ->where('status', 'published')
+                ->live()
                 ->orderByDesc('published_at')
                 ->get()
                 ->map(fn (Article $article) => [
@@ -1550,95 +1550,10 @@ class SiteController extends Controller
 
     private function enrichArticles(array $articles): array
     {
-        $fallbackArticles = [
-            [
-                'title' => 'Terazi Kalibrasyonu Nedir?',
-                'slug' => 'terazi-kalibrasyonu-nedir',
-                'category' => 'Kalibrasyon Rehberleri',
-                'category_slug' => 'kalibrasyon-rehberleri',
-                'author' => 'MTA Teknik Editör',
-                'reading_time' => '4 dk',
-                'published_at' => '2026-08-26',
-                'updated_at' => '2026-08-26',
-                'excerpt' => 'Terazi kalibrasyonu, hassas tartım cihazlarında ölçüm güvenilirliği ve düzenli kontrol ihtiyacını anlatan rehber içerik.',
-                'answer' => 'Terazi kalibrasyonu, tartım cihazının referans kütlelerle karşılaştırılarak doğruluk durumunun değerlendirilmesidir.',
-            ],
-            [
-                'title' => 'Hassas Terazi Seçim Rehberi',
-                'slug' => 'hassas-terazi-secim-rehberi',
-                'category' => 'Satın Alma Rehberleri',
-                'category_slug' => 'satin-alma-rehberleri',
-                'author' => 'MTA Teknik Editör',
-                'reading_time' => '5 dk',
-                'published_at' => '2026-08-26',
-                'updated_at' => '2026-08-26',
-                'excerpt' => 'Hassas terazi seçiminde kapasite, okunabilirlik, kullanım ortamı, servis ve kalibrasyon ihtiyacını değerlendiren satın alma rehberi.',
-                'answer' => 'Hassas terazi seçiminde kapasite, okunabilirlik, kullanım ortamı, servis desteği ve kalibrasyon ihtiyacı birlikte değerlendirilmelidir.',
-            ],
-            [
-                'title' => 'pH Metre Seçerken Nelere Dikkat Edilmeli?',
-                'slug' => 'ph-metre-secerken-nelere-dikkat-edilmeli',
-                'category' => 'Laboratuvar Cihazları',
-                'category_slug' => 'laboratuvar-cihazlari',
-                'author' => 'MTA Teknik Editör',
-                'reading_time' => '5 dk',
-                'published_at' => '2026-08-26',
-                'updated_at' => '2026-08-26',
-                'excerpt' => 'pH metre seçiminde elektrot tipi, kullanım alanı, sıcaklık kompanzasyonu, servis ve kalibrasyon ihtiyacına bakılmalıdır.',
-                'answer' => 'pH metre seçiminde ölçüm ortamı, elektrot tipi, sıcaklık kompanzasyonu ve teknik destek ihtiyacı birlikte düşünülmelidir.',
-            ],
-            [
-                'title' => 'Refraktometre Nedir?',
-                'slug' => 'refraktometre-nedir',
-                'category' => 'Laboratuvar Cihazları',
-                'category_slug' => 'laboratuvar-cihazlari',
-                'author' => 'MTA Teknik Editör',
-                'reading_time' => '4 dk',
-                'published_at' => '2026-08-26',
-                'updated_at' => '2026-08-26',
-                'excerpt' => 'Refraktometrelerin kırılma indisi, Brix ve kalite kontrol uygulamalarındaki kullanımını özetleyen rehber.',
-                'answer' => 'Refraktometre, numunelerin kırılma indisi veya Brix gibi değerlerini ölçmek için kullanılan laboratuvar cihazıdır.',
-            ],
-            [
-                'title' => 'Viskozimetre Ne İşe Yarar?',
-                'slug' => 'viskozimetre-ne-ise-yarar',
-                'category' => 'Laboratuvar Cihazları',
-                'category_slug' => 'laboratuvar-cihazlari',
-                'author' => 'MTA Teknik Editör',
-                'reading_time' => '4 dk',
-                'published_at' => '2026-08-26',
-                'updated_at' => '2026-08-26',
-                'excerpt' => 'Viskozimetrelerin sıvı ve yarı akışkan numunelerde viskozite ölçümü için nasıl kullanıldığını anlatan içerik.',
-                'answer' => 'Viskozimetre, sıvı veya yarı akışkan numunelerin akışa karşı direncini değerlendiren ölçüm cihazıdır.',
-            ],
-            [
-                'title' => 'Kalibrasyon Periyodu Nasıl Belirlenir?',
-                'slug' => 'kalibrasyon-periyodu-nasil-belirlenir',
-                'category' => 'Ölçüm Güvenilirliği',
-                'category_slug' => 'olcum-guvenilirligi',
-                'author' => 'MTA Teknik Editör',
-                'reading_time' => '5 dk',
-                'published_at' => '2026-08-26',
-                'updated_at' => '2026-08-26',
-                'excerpt' => 'Kalibrasyon periyodu; cihaz kullanımı, ölçüm riski, kalite prosedürleri ve geçmiş sonuçlara göre değerlendirilmelidir.',
-                'answer' => 'Kalibrasyon periyodu cihazın kullanım yoğunluğu, ölçüm riski, kalite prosedürü ve geçmiş performansına göre belirlenir.',
-            ],
-            [
-                'title' => 'Cihaz Bakım Rehberi',
-                'slug' => 'cihaz-bakim-rehberi',
-                'category' => 'Teknik Servis ve Bakım',
-                'category_slug' => 'teknik-servis-ve-bakim',
-                'author' => 'MTA Teknik Editör',
-                'reading_time' => '5 dk',
-                'published_at' => '2026-08-26',
-                'updated_at' => '2026-08-26',
-                'excerpt' => 'Laboratuvar cihazlarında bakım ihtiyacı, arıza belirtileri ve kalibrasyon öncesi teknik kontrol süreçlerini özetleyen rehber.',
-                'answer' => 'Cihaz bakımı; arıza oluşmadan önce performans, güvenilirlik ve servis ihtiyacını kontrol altında tutmaya yardımcı olur.',
-            ],
-        ];
+        // Not: eski placeholder "fallback" yazıları kaldırıldı; blog içeriği artık
+        // yalnızca DB (Filament) + config/mta.articles + articleSeoContent() arm'larından gelir.
 
         return collect($articles)
-            ->merge($fallbackArticles)
             ->filter(fn ($article) => ! empty($article['slug']) && ! empty($article['category_slug']))
             ->map(fn ($article) => [
                 'title' => $article['title'],
@@ -7310,12 +7225,14 @@ class SiteController extends Controller
 
     private function articleSchema(array $article): array
     {
-        return [
+        return array_filter([
             '@type' => 'Article',
             'headline' => $article['title'],
-            'description' => $article['excerpt'],
+            'description' => $article['excerpt'] ?? null,
+            'image' => ! empty($article['image']) ? $this->absoluteAsset($article['image']) : null,
             'datePublished' => $article['published_at'] ?? null,
-            'dateModified' => $article['updated_at'] ?? null,
+            'dateModified' => $article['updated_at'] ?? $article['published_at'] ?? null,
+            'mainEntityOfPage' => url()->current(),
             'author' => [
                 '@type' => 'Organization',
                 'name' => $article['author'] ?? config('mta.site.name'),
@@ -7328,6 +7245,6 @@ class SiteController extends Controller
                     'url' => asset('mta-logo.png'),
                 ],
             ],
-        ];
+        ], fn ($v) => $v !== null);
     }
 }

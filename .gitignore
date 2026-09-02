@@ -33,3 +33,6 @@ Thumbs.db
 
 # Local uploaded media (regenerated per environment)
 /storage/app/public/media
+
+# El ile ayıklanacak sahipsiz ürün görselleri
+/public/images/_orphan
