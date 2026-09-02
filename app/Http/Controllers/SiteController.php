@@ -1083,7 +1083,7 @@ class SiteController extends Controller
     {
         $base = rtrim(config('app.url'), '/');
 
-        return Response::make("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /login\nDisallow: /arama\n\nSitemap: {$base}/sitemap.xml\n", 200, [
+        return Response::make("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /ara\n\nSitemap: {$base}/sitemap.xml\n", 200, [
             'Content-Type' => 'text/plain',
         ]);
     }
