@@ -55,5 +55,19 @@ class PublicPagesTest extends TestCase
         $response->assertOk();
         $response->assertSee('Bize Yazın', false);
         $response->assertDontSee('class="lead-form"', false);
+        $response->assertSee('maps/embed', false); // gömülü harita
+    }
+
+    public function test_faq_and_geo_json_ld_present(): void
+    {
+        // FAQPage: SSS'li sayfalarda; GeoCoordinates: Organization ile her sayfada.
+        $this->get('/iletisim')
+            ->assertOk()
+            ->assertSee('"@type":"FAQPage"', false)
+            ->assertSee('"@type":"GeoCoordinates"', false);
+
+        $this->get('/hizmetler/tork-kalibrasyonu')
+            ->assertOk()
+            ->assertSee('"@type":"FAQPage"', false);
     }
 }

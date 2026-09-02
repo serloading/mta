@@ -186,7 +186,7 @@ class SiteController extends Controller
                     ['name' => $service['title'], 'url' => route('services.show', $service['slug'])],
                 ]),
                 $this->serviceSchema($service),
-            ], $service),
+            ], array_merge($service, ["faq" => $serviceSeo["faq"] ?? ($service["faq"] ?? [])])),
         ]);
     }
 
@@ -254,7 +254,7 @@ class SiteController extends Controller
                     ['name' => $technicalService['title'], 'url' => route('technical-services.show', $technicalService['slug'])],
                 ]),
                 $this->serviceSchema($technicalService),
-            ], $technicalService),
+            ], array_merge($technicalService, ["faq" => $technicalServiceSeo["faq"] ?? ($technicalService["faq"] ?? [])])),
         ]);
     }
 
@@ -488,7 +488,7 @@ class SiteController extends Controller
                     ['name' => 'Ürünler', 'url' => route('products.index')],
                     ['name' => $categoryItem['name'], 'url' => route('products.category', $categoryItem['slug'])],
                 ]),
-            ]),
+            ], ['faq' => $categorySeo['faq'] ?? []]),
         ]));
     }
 
@@ -692,7 +692,7 @@ class SiteController extends Controller
                     ['name' => $article['title'], 'url' => route('knowledge.show', $article['slug'])],
                 ]),
                 $this->articleSchema($article),
-            ], $article),
+            ], array_merge($article, ["faq" => $articleSeo["faq"] ?? []])),
         ]);
     }
 
@@ -6444,6 +6444,145 @@ class SiteController extends Controller
                     ['question' => 'Polarimetre kalibrasyonu nasıl yapılır?', 'answer' => 'Sertifikalı kontrol tüpleri veya kuvars referans plakalarıyla okuma doğruluğu periyodik olarak doğrulanır.'],
                 ],
             ],
+            'mekanik-karistirici' => [
+                'slug' => 'mekanik-karistirici',
+                'meta_title' => 'Mekanik Karıştırıcı Modelleri ve Üstten Karıştırıcılar | MTA Endüstri',
+                'meta_description' => 'Mekanik karıştırıcı (üstten karıştırıcı, overhead stirrer) modellerini tork, devir aralığı ve viskozite kapasitesine göre inceleyin; teklif alın.',
+                'h1' => 'Mekanik Karıştırıcı Modelleri ve Üstten Karıştırıcılar',
+                'hero_text' => 'Mekanik karıştırıcılar (üstten karıştırıcı / overhead stirrer); manyetik karıştırıcının yetersiz kaldığı yüksek viskoziteli, büyük hacimli veya katı-sıvı karışımların karıştırılması için kullanılır. MTA Endüstri mekanik karıştırıcı kategorisinde farklı tork, devir aralığı ve şaft/pervane seçeneklerine sahip endüstriyel karıştırıcı modellerini teknik özellikleriyle listeler.',
+                'primary_cta' => 'Mekanik Karıştırıcı İçin Teklif Al',
+                'secondary_cta' => 'Manyetik Karıştırıcı Modellerini İncele',
+                'secondary_cta_url' => route('products.category', 'manyetik-karistirici'),
+                'brand_eyebrow' => 'Mekanik karıştırıcı markaları',
+                'list_title' => 'Mekanik karıştırıcı modelleri listesi',
+                'sections' => [
+                    ['title' => 'Mekanik Karıştırıcı Ne Zaman Gerekir?', 'text' => 'Karıştırılacak sıvının viskozitesi yüksekse, hacim büyükse (litrelerce), çökelen katı partiküller askıda tutulacaksa veya güçlü bir kesme (shear) gerekiyorsa mekanik karıştırıcı tercih edilir. Manyetik karıştırıcı bu koşullarda balık kayması ve yetersiz tork nedeniyle çalışmaz.'],
+                    ['title' => 'Mekanik Karıştırıcı Seçerken Nelere Dikkat Edilmeli?', 'text' => 'Maksimum karıştırma hacmi, viskozite kapasitesi (mPa·s), tork değeri, devir aralığı ve devir sabitleme, şaft çapı ve pervane tipi, sürekli çalışma dayanımı, dijital gösterge ve zamanlayıcı özellikleri birlikte değerlendirilmelidir.'],
+                    ['title' => 'Endüstriyel Karıştırıcı Kullanım Alanları', 'text' => 'Boya, reçine, kozmetik, gıda, kimya ve atık su uygulamalarında çözelti hazırlama, dispersiyon, emülsiyon ve süspansiyon işlemlerinde kullanılır.'],
+                    ['title' => 'Mekanik Karıştırıcı Teknik Servis ve Devir Kalibrasyonu', 'text' => 'Devir düşüklüğü, tork kaybı, motor ısınması, redüktör sesi veya kontrol paneli hatasında teknik servis gerekebilir. Devir doğruluğunun kritik olduğu uygulamalarda devir kalibrasyonu değerlendirilebilir.'],
+                ],
+                'cta' => [
+                    'title' => 'Mekanik Karıştırıcı İçin Teklif Alın',
+                    'text' => 'Karıştıracağınız hacim, viskozite ve devir ihtiyacınıza uygun mekanik (üstten) karıştırıcı modelini seçmek için MTA Endüstri teknik ekibine ulaşabilirsiniz.',
+                    'note' => 'İhtiyacınıza uygun mekanik karıştırıcı veya üstten karıştırıcı için teknik ekibe ulaşın.',
+                    'button' => 'Mekanik Karıştırıcı İçin Teklif Al',
+                    'anchor' => 'mekanik karıştırıcı teklif talebi',
+                ],
+                'support_links' => [
+                    ['url' => route('products.category', 'manyetik-karistirici'), 'anchor' => 'manyetik karıştırıcı modelleri'],
+                    ['url' => route('products.category', 'homojenizator'), 'anchor' => 'homojenizatör modelleri'],
+                    ['url' => route('services.show', 'devir-kalibrasyonu'), 'anchor' => 'devir kalibrasyonu'],
+                    ['url' => route('technical-services.show', 'laboratuvar-cihazlari-icin-teknik-servis'), 'anchor' => 'laboratuvar cihazları teknik servis'],
+                ],
+                'faq' => [
+                    ['question' => 'Mekanik karıştırıcı ile manyetik karıştırıcı arasındaki fark nedir?', 'answer' => 'Mekanik karıştırıcı şaft ve pervane ile doğrudan karıştırır; yüksek viskozite ve büyük hacim için uygundur. Manyetik karıştırıcı düşük viskoziteli ve küçük hacimli uygulamalar içindir.'],
+                    ['question' => 'Mekanik karıştırıcı seçerken en önemli kriter nedir?', 'answer' => 'Karıştırılacak sıvının viskozitesi ve hacmi; buna bağlı olarak gereken tork ve devir aralığıdır.'],
+                    ['question' => 'Üstten karıştırıcı sürekli çalışmaya uygun mu?', 'answer' => 'Endüstriyel modeller uzun süreli sürekli çalışma için tasarlanır; kullanım yoğunluğunuza göre motor gücü ve soğutma özelliği seçilmelidir.'],
+                ],
+            ],
+            'santrifujler' => [
+                'slug' => 'santrifujler',
+                'meta_title' => 'Santrifüj Modelleri ve Laboratuvar Santrifüjleri | MTA Endüstri',
+                'meta_description' => 'Masaüstü, soğutmalı ve mikrolitre santrifüj modellerini rpm/rcf, rotor kapasitesi ve soğutma özelliğine göre inceleyin; teklif alın.',
+                'h1' => 'Santrifüj Modelleri ve Laboratuvar Santrifüjleri',
+                'hero_text' => 'Santrifüjler; numunelerin yoğunluk farkına göre ayrıştırılması için merkezkaç kuvvetini kullanan laboratuvar cihazlarıdır. MTA Endüstri santrifüj kategorisinde masaüstü, soğutmalı ve mikrolitre santrifüj modellerini rotor seçenekleri ve hız aralıklarıyla listeler.',
+                'primary_cta' => 'Santrifüj İçin Teklif Al',
+                'secondary_cta' => 'İlgili Kalibrasyon Hizmetlerini İncele',
+                'secondary_cta_url' => route('services.show', 'devir-kalibrasyonu'),
+                'brand_eyebrow' => 'Santrifüj markaları',
+                'list_title' => 'Santrifüj modelleri listesi',
+                'sections' => [
+                    ['title' => 'Santrifüj Ne İşe Yarar?', 'text' => 'Santrifüj, tüp içindeki numuneyi yüksek hızda döndürerek çökeltme (pellet) ve süpernatant ayrımı yapar. Klinik, mikrobiyoloji, moleküler biyoloji, gıda ve kimya laboratuvarlarında numune hazırlamada kullanılır.'],
+                    ['title' => 'rpm ve rcf (g) Farkı', 'text' => 'rpm dakikadaki devir sayısıdır; ayrım kuvvetini ise rotor yarıçapına bağlı olan rcf (relatif merkezkaç kuvveti, ×g) belirler. Protokoller genellikle g cinsinden verilir; santrifüjde rcf/rpm dönüşümü ve rotor yarıçapı dikkate alınmalıdır.'],
+                    ['title' => 'Santrifüj Seçerken Nelere Dikkat Edilmeli?', 'text' => 'Maksimum rpm/rcf, rotor tipi ve kapasitesi (tüp sayısı ve hacmi), soğutma ihtiyacı ve sıcaklık aralığı, dengesizlik (imbalance) sensörü, kapak kilidi, program hafızası ve gürültü seviyesi birlikte değerlendirilmelidir.'],
+                    ['title' => 'Santrifüjlerde Devir Kalibrasyonu ve Teknik Servis', 'text' => 'Hız ve (soğutmalı modellerde) sıcaklık doğruluğu sonuç tekrarlanabilirliği açısından önemlidir. Doğrulama gereken durumlarda devir kalibrasyonu değerlendirilebilir. Titreşim, dengesizlik hatası, soğutma yetersizliği, kapak veya motor arızasında teknik servis gerekir.'],
+                ],
+                'cta' => [
+                    'title' => 'Santrifüj İçin Teklif Alın',
+                    'text' => 'Numune tipi, tüp hacmi/sayısı, gereken rcf ve soğutma ihtiyacınıza uygun santrifüj modeli için MTA Endüstri teknik ekibine ulaşabilirsiniz.',
+                    'note' => 'İhtiyacınıza uygun masaüstü, soğutmalı veya mikrolitre santrifüj için teknik ekibe ulaşın.',
+                    'button' => 'Santrifüj İçin Teklif Al',
+                    'anchor' => 'santrifüj teklif talebi',
+                ],
+                'support_links' => [
+                    ['url' => route('services.show', 'devir-kalibrasyonu'), 'anchor' => 'devir kalibrasyonu'],
+                    ['url' => route('products.category', 'inkubatorler'), 'anchor' => 'inkübatör modelleri'],
+                    ['url' => route('technical-services.show', 'laboratuvar-cihazlari-icin-teknik-servis'), 'anchor' => 'laboratuvar cihazları teknik servis'],
+                ],
+                'faq' => [
+                    ['question' => 'Santrifüjde rpm mi rcf mi baz alınmalı?', 'answer' => 'Ayrım kuvvetini rcf (×g) belirlediği için protokoller g cinsinden verilir; rpm değeri rotor yarıçapına göre rcf\'ye dönüştürülerek ayarlanmalıdır.'],
+                    ['question' => 'Soğutmalı santrifüj ne zaman gerekir?', 'answer' => 'Isıya duyarlı numunelerde (protein, enzim, kan bileşenleri) ve uzun süreli yüksek hızlı çalışmalarda numune sıcaklığını korumak için gereklidir.'],
+                    ['question' => 'Santrifüj için kalibrasyon gerekir mi?', 'answer' => 'Hız ve soğutmalı modellerde sıcaklık doğruluğunun doğrulanması gereken uygulamalarda devir/sıcaklık kalibrasyonu değerlendirilebilir.'],
+                ],
+            ],
+            'vorteks-karistiricilar' => [
+                'slug' => 'vorteks-karistiricilar',
+                'meta_title' => 'Vorteks Karıştırıcı Modelleri (Vorteks Tüp Karıştırıcı) | MTA Endüstri',
+                'meta_description' => 'Vorteks karıştırıcı ve vorteks tüp karıştırıcı modellerini hız aralığı, çalışma modu ve aksesuar seçeneklerine göre inceleyin; teklif alın.',
+                'h1' => 'Vorteks Karıştırıcı Modelleri',
+                'hero_text' => 'Vorteks karıştırıcılar; tüp ve küçük hacimli kapların hızlı ve etkin şekilde karıştırılması için kullanılan kompakt laboratuvar cihazlarıdır. MTA Endüstri vorteks karıştırıcı kategorisinde sabit hızlı, ayarlanabilir hızlı ve dokunmatik (touch) çalışma modlu modelleri teknik özellikleriyle listeler.',
+                'primary_cta' => 'Vorteks Karıştırıcı İçin Teklif Al',
+                'secondary_cta' => 'Manyetik Karıştırıcı Modellerini İncele',
+                'secondary_cta_url' => route('products.category', 'manyetik-karistirici'),
+                'brand_eyebrow' => 'Vorteks karıştırıcı markaları',
+                'list_title' => 'Vorteks karıştırıcı modelleri listesi',
+                'sections' => [
+                    ['title' => 'Vorteks Karıştırıcı Ne İşe Yarar?', 'text' => 'Vorteks karıştırıcı, kabın tabanına uyguladığı dairesel titreşimle sıvı içinde girdap (vorteks) oluşturarak numuneyi saniyeler içinde homojenleştirir. Numune çözme, reaktif karıştırma, hücre süspansiyonu ve karışım hazırlama işlemlerinde kullanılır.'],
+                    ['title' => 'Çalışma Modları ve Aksesuarlar', 'text' => 'Sürekli mod sabit karıştırma için, dokunmatik (touch) mod ise kap bastırıldığında çalışma için kullanılır. Tekli tüp başlığı, köpük tüp tutucu, mikroplaka ve çoklu tüp adaptörleri ile farklı kap tiplerine uyarlanabilir.'],
+                    ['title' => 'Vorteks Tüp Karıştırıcı Seçerken Nelere Dikkat Edilmeli?', 'text' => 'Hız aralığı ve ayarlanabilirlik, yörünge çapı, sürekli/dokunmatik mod, taban ağırlığı ve stabilite, aksesuar uyumu ve sürekli çalışma dayanımı birlikte değerlendirilmelidir.'],
+                ],
+                'cta' => [
+                    'title' => 'Vorteks Karıştırıcı İçin Teklif Alın',
+                    'text' => 'Kullanacağınız kap tipi, hız ihtiyacı ve aksesuar gereksinimlerinize uygun vorteks karıştırıcı modeli için MTA Endüstri teknik ekibine ulaşabilirsiniz.',
+                    'note' => 'İhtiyacınıza uygun vorteks karıştırıcı veya vorteks tüp karıştırıcı için teknik ekibe ulaşın.',
+                    'button' => 'Vorteks Karıştırıcı İçin Teklif Al',
+                    'anchor' => 'vorteks karıştırıcı teklif talebi',
+                ],
+                'support_links' => [
+                    ['url' => route('products.category', 'manyetik-karistirici'), 'anchor' => 'manyetik karıştırıcı modelleri'],
+                    ['url' => route('products.category', 'santrifujler'), 'anchor' => 'santrifüj modelleri'],
+                    ['url' => route('technical-services.show', 'laboratuvar-cihazlari-icin-teknik-servis'), 'anchor' => 'laboratuvar cihazları teknik servis'],
+                ],
+                'faq' => [
+                    ['question' => 'Vorteks karıştırıcı ne için kullanılır?', 'answer' => 'Tüp ve küçük kapların girdap etkisiyle hızlıca homojenleştirilmesi için kullanılır: numune çözme, reaktif karıştırma ve süspansiyon hazırlama.'],
+                    ['question' => 'Dokunmatik (touch) mod nedir?', 'answer' => 'Kap cihazın kafasına bastırıldığında çalışan, bırakıldığında duran moddur; hızlı ve tek elle kullanım sağlar.'],
+                    ['question' => 'Vorteks karıştırıcıya mikroplaka takılabilir mi?', 'answer' => 'Uygun mikroplaka adaptörüyle birçok model mikroplaka ve çoklu tüp karıştırmayı destekler.'],
+                ],
+            ],
+            'balon-isiticilar' => [
+                'slug' => 'balon-isiticilar',
+                'meta_title' => 'Balon Isıtıcı Modelleri (Isıtıcı Manto) | MTA Endüstri',
+                'meta_description' => 'Balon ısıtıcı (ısıtıcı manto) modellerini balon hacmi, sıcaklık kontrolü ve karıştırma özelliğine göre inceleyin; laboratuvar ihtiyacınıza göre teklif alın.',
+                'h1' => 'Balon Isıtıcı Modelleri (Isıtıcı Manto)',
+                'hero_text' => 'Balon ısıtıcılar (ısıtıcı manto); cam balonların yüzeyi saran örtü rezistansla homojen ve kontrollü şekilde ısıtılması için kullanılır. MTA Endüstri balon ısıtıcı kategorisinde farklı balon hacimlerine, sıcaklık kontrol ve manyetik karıştırma özelliklerine sahip modelleri teknik özellikleriyle listeler.',
+                'primary_cta' => 'Balon Isıtıcı İçin Teklif Al',
+                'secondary_cta' => 'Termoreaktör Modellerini İncele',
+                'secondary_cta_url' => route('products.category', 'termoreaktor'),
+                'brand_eyebrow' => 'Balon ısıtıcı markaları',
+                'list_title' => 'Balon ısıtıcı modelleri listesi',
+                'sections' => [
+                    ['title' => 'Balon Isıtıcı Ne İşe Yarar?', 'text' => 'Balon ısıtıcı, dip kısmı yuvarlak cam balonların tüm yüzeyini kavrayarak lokal aşırı ısınma olmadan homojen ısıtma sağlar. Distilasyon, geri soğutuculu (reflux) reaksiyon, ekstraksiyon ve buharlaştırma işlemlerinde kullanılır.'],
+                    ['title' => 'Balon Isıtıcı Seçerken Nelere Dikkat Edilmeli?', 'text' => 'Balon hacmine uygun manto ölçüsü, maksimum sıcaklık, sıcaklık kontrol tipi (kademeli/dijital/prob geri beslemeli), manyetik karıştırma özelliği, örtü malzemesi ve güvenlik özellikleri (aşırı ısınma koruması) birlikte değerlendirilmelidir.'],
+                    ['title' => 'Isıtıcı Manto Kullanımı ve Güvenlik', 'text' => 'Manto ölçüsü balon hacmiyle eşleşmeli, balon boşken cihaz çalıştırılmamalı ve çözücülerle çalışırken sıcaklık kontrolü prob geri beslemesiyle yapılmalıdır. Örtü rezistansın nem alması izolasyon riski oluşturur.'],
+                ],
+                'cta' => [
+                    'title' => 'Balon Isıtıcı İçin Teklif Alın',
+                    'text' => 'Balon hacminiz, sıcaklık kontrol ve karıştırma ihtiyacınıza uygun balon ısıtıcı (ısıtıcı manto) modeli için MTA Endüstri teknik ekibine ulaşabilirsiniz.',
+                    'note' => 'İhtiyacınıza uygun balon ısıtıcı veya ısıtıcı manto için teknik ekibe ulaşın.',
+                    'button' => 'Balon Isıtıcı İçin Teklif Al',
+                    'anchor' => 'balon ısıtıcı teklif talebi',
+                ],
+                'support_links' => [
+                    ['url' => route('products.category', 'termoreaktor'), 'anchor' => 'termoreaktör modelleri'],
+                    ['url' => route('products.category', 'manyetik-karistirici'), 'anchor' => 'ısıtmalı manyetik karıştırıcı modelleri'],
+                    ['url' => route('services.show', 'sicaklik-kalibrasyonu'), 'anchor' => 'sıcaklık kalibrasyonu'],
+                ],
+                'faq' => [
+                    ['question' => 'Balon ısıtıcı ne için kullanılır?', 'answer' => 'Yuvarlak dipli cam balonların homojen ve kontrollü ısıtılması için; distilasyon, reflux, ekstraksiyon ve buharlaştırma işlemlerinde kullanılır.'],
+                    ['question' => 'Balon ısıtıcı seçerken hangi ölçü önemlidir?', 'answer' => 'Manto ölçüsü kullanılacak balonun hacmiyle eşleşmelidir; farklı hacimler için farklı manto gerekir.'],
+                    ['question' => 'Balon ısıtıcıda karıştırma yapılabilir mi?', 'answer' => 'Manyetik karıştırmalı modeller ısıtma ile birlikte manyetik balık aracılığıyla karıştırma sağlar.'],
+                ],
+            ],
             default => [],
         };
     }
@@ -6943,16 +7082,55 @@ class SiteController extends Controller
                 'postalCode' => '34890',
                 'addressCountry' => 'TR',
             ],
+            'geo' => [
+                '@type' => 'GeoCoordinates',
+                'latitude' => 40.88065695847028,
+                'longitude' => 29.23721823498121,
+            ],
+            'hasMap' => 'https://www.google.com/maps/search/?api=1&query=40.88065695847028,29.23721823498121',
+        ];
+    }
+
+    /**
+     * FAQPage JSON-LD — sayfada en az 2 SSS varsa üretilir.
+     */
+    private function faqSchema(array $faqs): ?array
+    {
+        $entities = collect($faqs)
+            ->filter(fn ($f) => is_array($f) && filled($f['question'] ?? null) && filled($f['answer'] ?? null))
+            ->map(fn ($f) => [
+                '@type' => 'Question',
+                'name' => (string) $f['question'],
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => (string) $f['answer'],
+                ],
+            ])
+            ->values()
+            ->all();
+
+        if (count($entities) < 2) {
+            return null;
+        }
+
+        return [
+            '@type' => 'FAQPage',
+            'mainEntity' => $entities,
         ];
     }
 
     private function schemaGraph(array $items, array $content = []): array
     {
+        $faqItem = isset($content['faq']) && is_array($content['faq'])
+            ? $this->faqSchema($content['faq'])
+            : null;
+
         return [
             '@context' => 'https://schema.org',
             '@graph' => array_values(array_filter([
                 $this->organizationSchema(),
                 ...$items,
+                $faqItem,
                 ...$this->customSchemaItems($content),
                 ...$this->currentSeoEntrySchemaItems(),
             ])),
