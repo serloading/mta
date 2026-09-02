@@ -9,9 +9,9 @@
 Laravel 13 + Blade + Vite + Tailwind v4 + Filament v4. cPanel/MySQL hedefli, SEO odaklı kalibrasyon & teknik ürün kataloğu sitesi. Sepet yok — katalog + teklif talebi mantığı.
 
 - **Ön yüz:** ana sayfa, `/kapsam`, `/urunler` (filtreli katalog), hizmet & teknik servis detay, kategori/marka sayfaları, blog, kurumsal sayfalar, dinamik `robots.txt` + `sitemap.xml`, JSON-LD.
-- **Yeni tasarım dili (Tailwind, teal-700 / slate-900 / amber-600) TAMAM:** ana sayfa, `/kapsam`, `/urunler` + kategori + marka, kalibrasyon + teknik servis detay, ürün detay (PDP kendi scoped sistemi), blog + blog detay, teklif-al, iletişim, yasal sayfalar, header/footer/mega menü.
-- **Hâlâ eski `app.css` semantik sınıflarında (9 sayfa):** `/markalar`, `/hizmetler` liste, `/teknik-servis` liste, `/bilgi-merkezi` + kategori, `/hakkimizda`, `/sertifikalar`, `/referanslar`, `/ara`.
-- **Admin (Filament, `/admin`):** hizmet, teknik servis, ürün, kategori, marka, blog, sayfa, SSS, lead, redirect, SEO, schema, site ayarları + **Kapsam Kategorileri / Kapsam Grupları**.
+- **Yeni tasarım dili (Tailwind, teal-700 / slate-900 / amber-600) — TÜM SAYFALAR TAMAM:** ana sayfa, `/kapsam`, `/urunler` + kategori + marka, kalibrasyon + teknik servis liste + detay, ürün detay (PDP kendi scoped sistemi), blog + blog detay, `/markalar`, `/bilgi-merkezi` + kategori, `/hakkimizda`, `/sertifikalar`, `/referanslar`, `/ara`, teklif-al, iletişim, yasal sayfalar, header/footer/mega menü. Eski `.cui-*`/`.taxonomy-card`/`.catalog-*` partial'ları artık kullanılmıyor (silinebilir).
+- **Yetkili servis rozeti:** `config/mta.php` → `authorized_services` (Bahco = tork kalibrasyon + tork anahtarları servisi). Top bar linki + hizmet/teknik servis detayda hero rozeti + "Yetkili Merkez Servisi" bloğu + ana sayfa marka şeridi etiketi + teknik servis listesinde amber ring'li kart. `SiteController::authorizedServiceFor()`.
+- **Admin (Filament, `/admin`):** hizmet, teknik servis, ürün, kategori, marka, blog, sayfa, SSS, lead, redirect, SEO, schema, site ayarları + Kapsam Kategorileri / Kapsam Grupları. Menü grupları `AdminPanelProvider::navigationGroups()` ile sıralı (Satış > Katalog > Hizmetler > İçerik > SEO > Site Ayarları > Güvenlik); her resource'ta `navigationSort`.
 - **Canlı demo:** `https://demo.mtaend.com` (HTTP Basic: `mtademo` / `MTAdemo!2026`; `X-Robots-Tag: noindex`). Admin: `admin@mtaend.com` / `MtaPanel!2026x`.
 
 ## Mimari / dosya haritası
@@ -72,7 +72,8 @@ ssh -i ~/.ssh/mtaend_deploy -p 2220 mtaend@65.109.68.25
 - [ ] Görsel optimizasyonu: WebP/AVIF, boyutlandırma (arşiv #74).
 - [ ] Kullanılmayan starter font/asset temizliği; `fontaine` build uyarısı (arşiv #75).
 - [ ] Lighthouse / Core Web Vitals (arşiv #76).
-- [ ] Kalan 9 sayfayı yeni Tailwind tasarım diline geçir: `/markalar`, `/hizmetler` liste, `/teknik-servis` liste, `/bilgi-merkezi` + kategori, `/hakkimizda`, `/sertifikalar`, `/referanslar`, `/ara`.
+- [x] ~~Kalan 9 sayfayı yeni tasarıma geçir~~ — tamamlandı (2026-09-02).
+- [ ] Kullanılmayan blade partial temizliği: `taxonomy-card`, `catalog-lower`, `catalog-results`, `catalog-filters`, `catalog-product-card`, `product-card`, `product-spec-filters`, `cta` artık hiçbir sayfada include edilmiyor.
 - [ ] Teknik servis eski URL redirect'leri; schema çıktıları gerçek içerikle gözden geçirme (arşiv #23, #26).
 - [ ] Test kapsamı: sitemap + import + lead form testleri (arşiv #86). (`PublicPagesTest` eklendi — yasal/teklif/blog/iletişim smoke.)
 - [ ] GSC + GA4 kurulumu (arşiv #83); yedekleme planı (arşiv #82); canlı SEO checklist (arşiv #87).
