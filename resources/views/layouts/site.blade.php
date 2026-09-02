@@ -88,7 +88,7 @@
         <div class="container main-bar-inner">
             <a class="mb-logo" href="{{ route('home') }}" aria-label="MTA Endüstri ana sayfa">
                 <img src="{{ asset('mta-logo.png') }}" width="74" height="58" alt="MTA Endüstri logosu">
-                <span class="mb-logo-text"><strong>MTA Endüstri</strong><small>Akredite Kalibrasyon Hizmeti</small></span>
+                <span class="mb-logo-text"><strong>MTA Endüstri</strong><small>TÜRKAK Onaylı</small></span>
             </a>
 
             @php
@@ -206,33 +206,33 @@
                 <div class="mega-nav-item">
                     <a class="mega-trigger" href="{{ route('products.index') }}" aria-haspopup="true" aria-expanded="false" data-mega-trigger>Ürünler {!! $mi['cdown'] !!}</a>
                     <div class="mega-menu mega-menu--products !border-t-0 !bg-transparent !shadow-none" data-product-mega>
-                        <div class="mx-auto mt-1 w-full max-w-[1320px] overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-2xl">
-                            {{-- Kategoriler: 5 sütun x 3 sıra --}}
-                            <div class="p-5">
+                        <div class="mx-auto mt-1 w-full max-w-[960px] overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-2xl">
+                            {{-- Kategoriler: içerik genişliğinde kompakt çipler --}}
+                            <div class="px-5 pb-4 pt-5">
                                 <div class="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
                                     <span class="text-sm font-bold text-slate-900">Ürün Kategorileri</span>
                                     <a href="{{ route('products.index') }}" class="text-xs font-medium text-teal-600 hover:underline">Tüm Kataloğu Gör →</a>
                                 </div>
-                                <div class="grid grid-cols-5 gap-2">
+                                <div class="flex flex-wrap gap-1.5">
                                     @foreach($megaRootCats as $cat)
                                         <a href="{{ route('products.category', $cat['slug']) }}"
-                                           class="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-colors hover:border-teal-600 hover:bg-teal-50 hover:text-teal-700">
-                                            <span class="shrink-0 text-slate-400 [&>svg]:h-4 [&>svg]:w-4">{!! $megaIcon($cat['name']) !!}</span>
-                                            <span class="truncate">{{ $cat['name'] }}</span>
+                                           class="inline-flex items-center gap-1.5 rounded-md border border-slate-200 px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition-colors hover:border-teal-600 hover:bg-teal-50 hover:text-teal-700">
+                                            <span class="shrink-0 text-slate-400 [&>svg]:h-3.5 [&>svg]:w-3.5">{!! $megaIcon($cat['name']) !!}</span>
+                                            <span>{{ $cat['name'] }}</span>
                                         </a>
                                     @endforeach
                                 </div>
                             </div>
 
-                            {{-- ALT ŞERİT: marka logoları --}}
+                            {{-- ALT ŞERİT: marka logoları (büyük) --}}
                             @if($megaBrandLogos->isNotEmpty())
-                                <div class="flex items-center gap-5 border-t border-slate-200 bg-slate-50 px-5 py-3">
-                                    <span class="shrink-0 text-[11px] font-bold uppercase tracking-wide text-slate-400">Markalar</span>
-                                    <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+                                <div class="border-t border-slate-200 bg-slate-50 px-6 py-5">
+                                    <p class="mb-3 text-center text-[11px] font-bold uppercase tracking-[.12em] text-slate-400">Tedarikçi &amp; Servis Ortağı Markalar</p>
+                                    <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-5">
                                         @foreach($megaBrandLogos as $b)
                                             <a href="{{ route('products.brand', $b['slug']) }}" aria-label="{{ $b['name'] }}"
-                                               class="opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0">
-                                                <img src="{{ asset($b['logo']) }}" alt="{{ $b['name'] }}" class="h-6 w-auto max-w-[92px] object-contain" loading="lazy">
+                                               class="opacity-70 grayscale transition hover:opacity-100 hover:grayscale-0">
+                                                <img src="{{ asset($b['logo']) }}" alt="{{ $b['name'] }}" class="h-9 w-auto max-w-[130px] object-contain" loading="lazy">
                                             </a>
                                         @endforeach
                                     </div>
@@ -258,7 +258,6 @@
             <form class="mb-search" action="{{ route('search') }}" method="get" role="search" data-search>
                 <svg class="mb-search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input type="search" name="q" placeholder="Cihaz, model kodu veya kategori ara…" autocomplete="off" aria-label="Katalogda ara" data-search-input>
-                <kbd class="mb-search-kbd" aria-hidden="true">Ctrl K</kbd>
                 <div class="mb-search-panel" data-search-panel role="listbox" hidden></div>
             </form>
 
