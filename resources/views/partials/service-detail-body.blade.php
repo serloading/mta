@@ -7,6 +7,10 @@
     $servicedDevices = array_values(array_filter((array) ($servicedDevices ?? [])));
     $relatedProducts = collect($relatedProducts ?? []);
     $faqs = collect($faqs ?? [])->take(6);
+    $authorizedService = $authorizedService ?? null;
+    $authorizedLogo = $authorizedService && ! empty($authorizedService['logo']) && file_exists(public_path($authorizedService['logo']))
+        ? asset($authorizedService['logo'])
+        : null;
 
     $tableRows = $scopeGroups->flatMap(function ($group) use ($standards) {
         return collect($group['items'] ?? [])->map(fn ($item) => [
@@ -63,6 +67,18 @@
                         </span>
                     @endforeach
                 </div>
+
+                @if($authorizedService)
+                    <div class="mt-5 inline-flex items-center gap-3 rounded-xl border border-amber-400/30 bg-white/95 px-4 py-2.5 shadow-lg">
+                        @if($authorizedLogo)
+                            <img src="{{ $authorizedLogo }}" alt="{{ $authorizedService['brand'] }} logosu" class="h-7 w-auto object-contain">
+                        @else
+                            <span class="text-sm font-extrabold text-slate-900">{{ $authorizedService['brand'] }}</span>
+                        @endif
+                        <span class="h-6 w-px bg-slate-200"></span>
+                        <span class="text-xs font-bold uppercase tracking-wide text-amber-700">{{ $authorizedService['role'] }}</span>
+                    </div>
+                @endif
             </div>
 
             <div class="lg:col-span-5">
@@ -104,6 +120,38 @@
             </div>
         </div>
     </section>
+
+    {{-- ============ YETKİLİ / MERKEZ SERVİS ============ --}}
+    @if($authorizedService)
+        <section class="my-8 overflow-hidden rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white">
+            <div class="grid grid-cols-1 gap-6 p-8 lg:grid-cols-12 lg:items-center lg:p-10">
+                <div class="lg:col-span-4">
+                    <div class="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+                        @if($authorizedLogo)
+                            <img src="{{ $authorizedLogo }}" alt="{{ $authorizedService['brand'] }} logosu" class="h-10 w-auto object-contain">
+                        @else
+                            <span class="text-lg font-extrabold text-slate-900">{{ $authorizedService['brand'] }}</span>
+                        @endif
+                    </div>
+                    <p class="mt-3 text-xs font-bold uppercase tracking-wide text-amber-700">{{ $authorizedService['role'] }}</p>
+                </div>
+                <div class="lg:col-span-8">
+                    <h2 class="text-lg font-extrabold text-slate-900">{{ $authorizedService['brand'] }} {{ $authorizedService['role'] }}</h2>
+                    <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ $authorizedService['blurb'] }}</p>
+                    @if(! empty($authorizedService['points']))
+                        <ul class="mt-4 grid grid-cols-1 gap-2 text-sm text-slate-700 sm:grid-cols-2">
+                            @foreach($authorizedService['points'] as $point)
+                                <li class="flex items-start gap-2">
+                                    <svg class="mt-0.5 h-4 w-4 shrink-0 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                                    {{ $point }}
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+            </div>
+        </section>
+    @endif
 
     {{-- ============ SECTION 2 · NE ZAMAN & HAZIRLIK ============ --}}
     <section class="my-10 grid grid-cols-1 gap-6 md:grid-cols-2">

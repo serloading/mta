@@ -10,6 +10,7 @@
             ['label' => 'Teknik Servis', 'url' => route('technical-services.index')],
             ['label' => $technicalService['title']],
         ],
+        'authorizedService' => $authorizedService ?? null,
         'scopeGroups' => [],
         'standards' => [],
         'servicedDevices' => $technicalService['devices'] ?? $technicalServiceSeo['device_list'] ?? [],

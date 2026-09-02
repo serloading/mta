@@ -53,6 +53,12 @@
                     <a href="{{ route('blog.index') }}">Blog</a>
                     <a href="{{ route('about') }}">Hakkımızda</a>
                 </nav>
+                @foreach($topbarAuthorizedServices ?? [] as $tbAuth)
+                    <a class="tb-badge" href="{{ $tbAuth['url'] }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.7 2.7-2-2 2.7-2.7z"/></svg>
+                        {{ $tbAuth['short'] }}
+                    </a>
+                @endforeach
                 <span class="tb-sep" aria-hidden="true"></span>
                 <div class="tb-social" aria-label="Sosyal medya">
                     @foreach(\App\Support\SiteSettings::socialLinks() as $social)

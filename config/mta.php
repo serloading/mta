@@ -795,4 +795,37 @@ return [
             'answer' => 'Evet. Title, meta description, canonical, OG verileri ve schema seçenekleri admin tarafında yönetilebilir şekilde tasarlanacak.',
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Yetkili / merkez servis anlaşmaları
+    |--------------------------------------------------------------------------
+    | Marka bazlı yetkili servis rozeti. Her kayıt hem top bar'da kısa link,
+    | hem ilgili hizmet/teknik servis detay sayfasında öne çıkan blok üretir.
+    | Yeni bir marka anlaşması eklemek için buraya bir satır eklemek yeterli.
+    */
+    'authorized_services' => [
+        'bahco' => [
+            'brand' => 'Bahco',
+            'logo' => 'images/brands/bahco.png',
+            'role' => 'Türkiye Yetkili Merkez Servisi',
+            'short' => 'Bahco Yetkili Servis',
+            'tagline' => 'Bahco tork anahtarları ve tork ürünleri için yetkili merkez servis',
+            'blurb' => 'MTA Endüstri, Bahco tork anahtarları ve tork ürünleri için yetkili merkez servistir. '
+                . 'Arıza tespiti, bakım, ayar ve kalibrasyon öncesi hazırlık işlemlerini üretici standartlarında yürütür; '
+                . 'servis ve akredite tork kalibrasyonunu tek noktadan sunar.',
+            'points' => [
+                'Orijinal Bahco yedek parça ve komponent tedariki',
+                'Üretici prosedürlerine uygun bakım, ayar ve kilitleme kontrolü',
+                'Teknik servis + TÜRKAK akredite tork kalibrasyonu tek elden',
+                'Kayıtlı servis geçmişi ve garanti takibi',
+            ],
+            // Hangi sayfalarda öne çıkacak (slug listeleri):
+            'technical_service_slugs' => ['tork-anahtarlari-servisi'],
+            'service_slugs' => ['tork-kalibrasyonu'],
+            // Top bar linkinin gideceği hedef:
+            'primary_target' => ['type' => 'technical_service', 'slug' => 'tork-anahtarlari-servisi'],
+            'show_in_topbar' => true,
+        ],
+    ],
 ];

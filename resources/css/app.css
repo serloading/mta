@@ -68,9 +68,13 @@ a {
     color: inherit;
 }
 
-img {
-    max-width: 100%;
-    height: auto;
+/* Reset: @layer base'e alındı ki Tailwind yükseklik utility'leri (h-7, h-10 …)
+   <img> üzerinde ezilmesin. */
+@layer base {
+    img {
+        max-width: 100%;
+        height: auto;
+    }
 }
 
 :focus-visible {
@@ -158,6 +162,24 @@ img {
 .tb-right { display: flex; align-items: center; gap: 16px; }
 .tb-links { display: flex; gap: 16px; }
 .tb-sep { width: 1px; height: 12px; background: #334155; }
+
+/* Yetkili servis rozeti (Bahco vb.) — top bar */
+.tb-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 9px;
+    border: 1px solid rgba(217, 119, 6, .45);
+    border-radius: 999px;
+    color: #fbbf24;
+    font-weight: 700;
+    letter-spacing: .01em;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color .18s ease, color .18s ease;
+}
+.tb-badge svg { width: 12px; height: 12px; }
+.tb-badge:hover { background: rgba(217, 119, 6, .16); color: #fde68a; }
 .tb-social { display: flex; gap: 12px; }
 .tb-social svg { width: 15px; height: 15px; fill: currentColor; }
 
@@ -757,6 +779,7 @@ img {
     .mb-actions { margin-left: auto; }
     .top-bar-inner { justify-content: center; }
     .tb-links,
+    .tb-badge,
     .tb-sep { display: none; }
 }
 

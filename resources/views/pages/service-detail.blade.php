@@ -10,6 +10,7 @@
             ['label' => 'Kalibrasyon', 'url' => route('services.index')],
             ['label' => $service['title']],
         ],
+        'authorizedService' => $authorizedService ?? null,
         'scopeGroups' => $service['scope_groups'] ?? [],
         'standards' => $service['standards'] ?? [],
         'servicedDevices' => $service['devices'] ?? [],

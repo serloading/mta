@@ -171,10 +171,17 @@
             <h2 class="text-center text-sm font-semibold uppercase tracking-wider text-slate-500">
                 Tedarikçi ve Servis Ortağı Olduğumuz Markalar
             </h2>
-            <div class="mt-6 flex flex-wrap items-center justify-between gap-8 border-y border-slate-200/60 py-6">
+            <div class="mt-6 flex flex-wrap items-center justify-between gap-x-8 gap-y-6 border-y border-slate-200/60 py-6">
                 @foreach($partnerBrands as $brand)
-                    <a href="{{ $brand['url'] }}" class="opacity-80 grayscale transition-all hover:opacity-100 hover:grayscale-0">
+                    <a href="{{ $brand['url'] }}"
+                       class="group flex flex-col items-center gap-1.5 {{ empty($brand['authorized']) ? 'opacity-80 grayscale transition-all hover:opacity-100 hover:grayscale-0' : 'transition-all' }}">
                         <img src="{{ asset($brand['logo']) }}" alt="{{ $brand['name'] }}" class="h-8 w-auto object-contain lg:h-10" loading="lazy">
+                        @if(! empty($brand['authorized']))
+                            <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
+                                <svg class="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                                {{ $brand['role'] }}
+                            </span>
+                        @endif
                     </a>
                 @endforeach
             </div>

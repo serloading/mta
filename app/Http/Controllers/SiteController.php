@@ -81,7 +81,36 @@ class SiteController extends Controller
                 'name' => $name,
                 'logo' => 'images/brands/' . $slug . '.png',
                 'url' => route('products.brand', $slug),
+                'authorized' => false,
+                'role' => null,
             ])->values()->all();
+
+        // Yetkili / merkez servis ortakları (config/mta.php) — marka şeridinin başına eklenir.
+        $authorizedRibbon = collect(config('mta.authorized_services', []))
+            ->map(function ($entry) use ($brandLogoDir) {
+                $target = $entry['primary_target'] ?? null;
+                $url = route('technical-services.index');
+                if (is_array($target)) {
+                    $url = match ($target['type'] ?? '') {
+                        'service' => route('services.show', $target['slug']),
+                        'technical_service' => route('technical-services.show', $target['slug']),
+                        default => route('technical-services.index'),
+                    };
+                }
+
+                return [
+                    'name' => $entry['brand'] ?? '',
+                    'logo' => $entry['logo'] ?? '',
+                    'url' => $url,
+                    'authorized' => true,
+                    'role' => $entry['role'] ?? 'Yetkili Servis',
+                ];
+            })
+            ->filter(fn ($b) => $b['logo'] !== '' && is_file(public_path($b['logo'])))
+            ->values()
+            ->all();
+
+        $partnerBrands = array_merge($authorizedRibbon, $partnerBrands);
 
         return view('pages.home', [
             'meta' => $this->meta($metaTitle, $metaDescription),
@@ -145,6 +174,7 @@ class SiteController extends Controller
             'meta' => $this->meta($metaTitle, $metaDescription, $service['image'] ?? null),
             'service' => $service,
             'serviceSeo' => $serviceSeo,
+            'authorizedService' => $this->authorizedServiceFor('service', $service['slug']),
             'products' => $products,
             'quoteCta' => $this->quoteCta('service', $service['slug'], $service['title'], route('services.show', $service['slug'])),
             'faqs' => $this->faqsData(),
@@ -212,6 +242,7 @@ class SiteController extends Controller
             'meta' => $this->meta($metaTitle, $metaDescription, $technicalService['image'] ?? null),
             'technicalService' => $technicalService,
             'technicalServiceSeo' => $technicalServiceSeo,
+            'authorizedService' => $this->authorizedServiceFor('technical_service', $technicalService['slug']),
             'services' => $this->servicesData(),
             'products' => $products,
             'quoteCta' => $this->quoteCta('technical_service', $technicalService['slug'], $technicalService['title'], route('technical-services.show', $technicalService['slug'])),
@@ -225,6 +256,21 @@ class SiteController extends Controller
                 $this->serviceSchema($technicalService),
             ], $technicalService),
         ]);
+    }
+
+    /**
+     * Bir hizmet / teknik servis / ürün slug'ı için tanımlı yetkili servis kaydını döndürür.
+     * Kayıtlar config/mta.php → authorized_services altında.
+     */
+    private function authorizedServiceFor(string $type, string $slug): ?array
+    {
+        foreach ((array) config('mta.authorized_services', []) as $key => $entry) {
+            if (in_array($slug, (array) ($entry[$type . '_slugs'] ?? []), true)) {
+                return ['key' => $key] + $entry;
+            }
+        }
+
+        return null;
     }
 
     public function scope()

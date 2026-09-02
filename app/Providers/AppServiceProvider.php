@@ -44,6 +44,34 @@ class AppServiceProvider extends ServiceProvider
             }
 
             $view->with('megaFeatureProducts', $features);
+
+            // Top bar — yetkili / merkez servis rozetleri (config/mta.php).
+            $badges = [];
+            foreach ((array) config('mta.authorized_services', []) as $entry) {
+                if (empty($entry['show_in_topbar'])) {
+                    continue;
+                }
+                $target = $entry['primary_target'] ?? null;
+                $url = url('/');
+                if (is_array($target)) {
+                    try {
+                        $url = match ($target['type'] ?? '') {
+                            'service' => route('services.show', $target['slug']),
+                            'technical_service' => route('technical-services.show', $target['slug']),
+                            'product' => route('products.show', $target['slug']),
+                            default => url('/'),
+                        };
+                    } catch (\Throwable $e) {
+                        $url = url('/');
+                    }
+                }
+                $badges[] = [
+                    'short' => $entry['short'] ?? (($entry['brand'] ?? '') . ' Yetkili Servis'),
+                    'url' => $url,
+                ];
+            }
+
+            $view->with('topbarAuthorizedServices', $badges);
         });
     }
 }
