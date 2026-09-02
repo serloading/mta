@@ -37,28 +37,27 @@
 <header class="site-header" data-header>
     <div class="top-bar" data-topbar>
         <div class="container top-bar-inner">
-            <div class="tb-contact">
-                <a href="tel:{{ $ct_phone_raw }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"/></svg>
-                    {{ $ct_phone }}
-                </a>
-                <a href="mailto:{{ $ct_email }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-                    {{ $ct_email }}
-                </a>
-            </div>
-            <div class="tb-right">
-                <nav class="tb-links" aria-label="Kurumsal">
-                    <a href="{{ route('certificates') }}">Sertifikalar</a>
-                    <a href="{{ route('blog.index') }}">Blog</a>
-                    <a href="{{ route('about') }}">Hakkımızda</a>
-                </nav>
-                @foreach($topbarAuthorizedServices ?? [] as $tbAuth)
+            <div class="tb-left">
+                @forelse($topbarAuthorizedServices ?? [] as $tbAuth)
                     <a class="tb-badge" href="{{ $tbAuth['url'] }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.7 2.7-2-2 2.7-2.7z"/></svg>
                         {{ $tbAuth['short'] }}
                     </a>
-                @endforeach
+                @empty
+                    <span class="tb-tagline">Akredite Kalibrasyon &amp; Teknik Servis</span>
+                @endforelse
+            </div>
+            <div class="tb-right">
+                <div class="tb-contact">
+                    <a href="tel:{{ $ct_phone_raw }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"/></svg>
+                        {{ $ct_phone }}
+                    </a>
+                    <a href="mailto:{{ $ct_email }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                        {{ $ct_email }}
+                    </a>
+                </div>
                 <span class="tb-sep" aria-hidden="true"></span>
                 <div class="tb-social" aria-label="Sosyal medya">
                     @foreach(\App\Support\SiteSettings::socialLinks() as $social)
@@ -91,13 +90,6 @@
                 <img src="{{ asset('mta-logo.png') }}" width="74" height="58" alt="MTA Endüstri logosu">
                 <span class="mb-logo-text"><strong>MTA Endüstri</strong><small>Akredite Kalibrasyon Hizmeti</small></span>
             </a>
-
-            <form class="mb-search" action="{{ route('search') }}" method="get" role="search" data-search>
-                <svg class="mb-search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="search" name="q" placeholder="Cihaz, model kodu veya kategori ara… (ör. Nem Tayin)" autocomplete="off" aria-label="Katalogda ara" data-search-input>
-                <kbd class="mb-search-kbd" aria-hidden="true">Ctrl K</kbd>
-                <div class="mb-search-panel" data-search-panel role="listbox" hidden></div>
-            </form>
 
             @php
                 $mi = [
@@ -143,80 +135,14 @@
                         ->take(6)
                         ->values();
                 };
+                // Ürünler mega — alt şeritteki marka logoları (diskte .png olanlar)
+                $megaBrandLogos = collect(config('mta.product_brands'))
+                    ->map(fn ($b) => $b + ['logo' => 'images/brands/' . ($b['slug'] ?? '') . '.png'])
+                    ->filter(fn ($b) => is_file(public_path($b['logo'])))
+                    ->values();
             @endphp
 
             <nav class="mb-nav desktop-nav" aria-label="Ana navigasyon">
-                <div class="mega-nav-item">
-                    <a class="mega-trigger" href="{{ route('products.index') }}" aria-haspopup="true" aria-expanded="false" data-mega-trigger>Ürünler {!! $mi['cdown'] !!}</a>
-                    <div class="mega-menu mega-menu--products !border-t-0 !bg-transparent !shadow-none" data-product-mega>
-                        <div class="mx-auto mt-1 flex max-h-[380px] w-full max-w-[1320px] flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-2xl">
-                            <div class="grid min-h-0 flex-1 grid-cols-12">
-                                {{-- SOL: kategoriler — 2 kolon kompakt grid, scroll YOK --}}
-                                <div class="col-span-4 grid grid-cols-2 content-start gap-1 overflow-hidden border-r border-slate-200 bg-slate-50/80 p-3">
-                                    @foreach($megaRootCats as $i => $cat)
-                                        <button type="button" data-mega-cat="{{ $cat['slug'] }}" aria-selected="{{ $i === 0 ? 'true' : 'false' }}"
-                                            class="group/mc flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold text-slate-700 transition-colors hover:bg-teal-700 hover:text-white aria-selected:bg-teal-700 aria-selected:font-bold aria-selected:text-white aria-selected:shadow-sm">
-                                            <span class="shrink-0 text-slate-400 group-hover/mc:text-white group-aria-selected/mc:text-white [&>svg]:h-3.5 [&>svg]:w-3.5">{!! $megaIcon($cat['name']) !!}</span>
-                                            <span class="truncate">{{ $cat['name'] }}</span>
-                                        </button>
-                                    @endforeach
-                                </div>
-
-                                {{-- SAĞ: orta (alt kategori) + promo kartı --}}
-                                <div class="col-span-8">
-                                    @foreach($megaRootCats as $i => $cat)
-                                        @php($kids = $megaChildrenBy->get($cat['slug'], collect()))
-                                        @php($feat = $megaFeatureProducts[$cat['slug']] ?? ($kids->isNotEmpty() ? ($megaFeatureProducts[$kids->first()['slug']] ?? null) : null))
-                                        <div data-mega-panel="{{ $cat['slug'] }}" class="{{ $i === 0 ? 'grid' : 'hidden' }} h-full grid-cols-8">
-                                            {{-- ORTA: alt kategoriler --}}
-                                            <div class="col-span-6 flex flex-col p-5">
-                                                <div class="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
-                                                    <span class="text-sm font-bold text-slate-900">{{ $cat['name'] }}</span>
-                                                    <a href="{{ route('products.category', $cat['slug']) }}" class="text-xs font-medium text-teal-600 hover:underline">Tümünü Gör →</a>
-                                                </div>
-                                                <div class="grid grid-cols-2 gap-x-4 gap-y-2">
-                                                    @forelse($kids->take(12) as $child)
-                                                        <a href="{{ route('products.category', $child['slug']) }}" class="flex items-center gap-1.5 text-xs text-slate-600 transition-all hover:font-semibold hover:text-teal-700">
-                                                            <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500/40"></span>{{ $child['name'] }}
-                                                        </a>
-                                                    @empty
-                                                        <a href="{{ route('products.category', $cat['slug']) }}" class="col-span-2 flex items-center gap-1.5 text-xs font-semibold text-teal-700 hover:underline">
-                                                            <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500/40"></span>Tüm {{ $cat['name'] }} modelleri →
-                                                        </a>
-                                                    @endforelse
-                                                </div>
-                                            </div>
-
-                                            {{-- SAĞ: tek öne çıkan ürün kartı --}}
-                                            <div class="col-span-2 flex flex-col justify-between border-l border-slate-100 bg-slate-50 p-3">
-                                                <div>
-                                                    <p class="line-clamp-2 text-[11px] font-bold leading-snug text-slate-900">{{ $feat['name'] ?? ($cat['name'] . ' serisi') }}</p>
-                                                    @if($feat && ! empty($feat['image']))
-                                                        <img src="{{ asset($feat['image']) }}" alt="{{ $feat['name'] }}" class="mx-auto my-2 h-28 object-contain mix-blend-multiply" loading="lazy">
-                                                    @else
-                                                        <span class="mx-auto my-2 flex h-28 items-center justify-center text-slate-300 [&>svg]:h-10 [&>svg]:w-10">{!! $megaIcon($cat['name']) !!}</span>
-                                                    @endif
-                                                </div>
-                                                <a href="{{ route('products.category', $cat['slug']) }}" class="block w-full rounded-lg bg-teal-700 py-2 text-center text-[11px] font-bold text-white shadow-sm transition-colors hover:bg-teal-600">Katalog &amp; Fiyatlar</a>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-
-                            {{-- ALT ŞERİT: öne çıkan markalar --}}
-                            <div class="flex items-center justify-between gap-3 border-t border-slate-200 bg-slate-100/70 px-4 py-1.5 text-[11px] text-slate-500">
-                                <span class="shrink-0 font-medium">Öne Çıkan Markalar:</span>
-                                <span class="flex flex-wrap items-center justify-end gap-x-3 gap-y-0.5">
-                                    @foreach(['shimadzu' => 'Shimadzu', 'weightlab' => 'Weightlab', 'velp' => 'Velp', 'and' => 'A&D', 'ohaus' => 'Ohaus'] as $bslug => $bname)
-                                        <a href="{{ route('products.brand', $bslug) }}" class="transition-colors hover:text-teal-700">{{ $bname }}</a>
-                                    @endforeach
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="mega-nav-item">
                     <a class="mega-trigger" href="{{ route('services.index') }}" aria-haspopup="true" aria-expanded="false" data-mega-trigger>Kalibrasyon {!! $mi['cdown'] !!}</a>
                     <div class="mega-menu mega-menu--svc">
@@ -237,7 +163,7 @@
                                             <span class="mega-svc-ico">{!! $megaIcon($service['title']) !!}</span>
                                             <span class="mega-svc-body">
                                                 <strong>{{ $service['title'] }}</strong>
-                                                <span>{{ Str::limit($service['summary'], 58) }}</span>
+                                                <span>{{ Str::limit($service['summary'], 150) }}</span>
                                             </span>
                                         </a>
                                     @endforeach
@@ -267,7 +193,7 @@
                                             <span class="mega-svc-ico">{!! $megaIcon($item['title']) !!}</span>
                                             <span class="mega-svc-body">
                                                 <strong>{{ $item['title'] }}</strong>
-                                                <span>{{ Str::limit($item['summary'], 58) }}</span>
+                                                <span>{{ Str::limit($item['summary'], 150) }}</span>
                                             </span>
                                         </a>
                                     @endforeach
@@ -277,9 +203,64 @@
                     </div>
                 </div>
 
+                <div class="mega-nav-item">
+                    <a class="mega-trigger" href="{{ route('products.index') }}" aria-haspopup="true" aria-expanded="false" data-mega-trigger>Ürünler {!! $mi['cdown'] !!}</a>
+                    <div class="mega-menu mega-menu--products !border-t-0 !bg-transparent !shadow-none" data-product-mega>
+                        <div class="mx-auto mt-1 w-full max-w-[1320px] overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-2xl">
+                            {{-- Kategoriler: 5 sütun x 3 sıra --}}
+                            <div class="p-5">
+                                <div class="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
+                                    <span class="text-sm font-bold text-slate-900">Ürün Kategorileri</span>
+                                    <a href="{{ route('products.index') }}" class="text-xs font-medium text-teal-600 hover:underline">Tüm Kataloğu Gör →</a>
+                                </div>
+                                <div class="grid grid-cols-5 gap-2">
+                                    @foreach($megaRootCats as $cat)
+                                        <a href="{{ route('products.category', $cat['slug']) }}"
+                                           class="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-xs font-semibold text-slate-700 transition-colors hover:border-teal-600 hover:bg-teal-50 hover:text-teal-700">
+                                            <span class="shrink-0 text-slate-400 [&>svg]:h-4 [&>svg]:w-4">{!! $megaIcon($cat['name']) !!}</span>
+                                            <span class="truncate">{{ $cat['name'] }}</span>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            {{-- ALT ŞERİT: marka logoları --}}
+                            @if($megaBrandLogos->isNotEmpty())
+                                <div class="flex items-center gap-5 border-t border-slate-200 bg-slate-50 px-5 py-3">
+                                    <span class="shrink-0 text-[11px] font-bold uppercase tracking-wide text-slate-400">Markalar</span>
+                                    <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+                                        @foreach($megaBrandLogos as $b)
+                                            <a href="{{ route('products.brand', $b['slug']) }}" aria-label="{{ $b['name'] }}"
+                                               class="opacity-60 grayscale transition hover:opacity-100 hover:grayscale-0">
+                                                <img src="{{ asset($b['logo']) }}" alt="{{ $b['name'] }}" class="h-6 w-auto max-w-[92px] object-contain" loading="lazy">
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
                 <a class="mb-nav-link" href="{{ route('scope') }}">Kapsam</a>
-                <a class="mb-nav-link" href="{{ route('contact') }}">İletişim</a>
+
+                <div class="mega-nav-item nav-has-dropdown">
+                    <a class="mega-trigger" href="{{ route('about') }}" aria-haspopup="true" aria-expanded="false" data-mega-trigger>Kurumsal {!! $mi['cdown'] !!}</a>
+                    <div class="nav-dropdown">
+                        <a href="{{ route('about') }}">Hakkımızda</a>
+                        <a href="{{ route('certificates') }}">Sertifikalar</a>
+                        <a href="{{ route('blog.index') }}">Blog</a>
+                        <a href="{{ route('contact') }}">İletişim</a>
+                    </div>
+                </div>
             </nav>
+
+            <form class="mb-search" action="{{ route('search') }}" method="get" role="search" data-search>
+                <svg class="mb-search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="search" name="q" placeholder="Cihaz, model kodu veya kategori ara…" autocomplete="off" aria-label="Katalogda ara" data-search-input>
+                <kbd class="mb-search-kbd" aria-hidden="true">Ctrl K</kbd>
+                <div class="mb-search-panel" data-search-panel role="listbox" hidden></div>
+            </form>
 
             <div class="mb-actions">
                 <a class="mb-icon-btn" href="{{ route('quote') }}" aria-label="Hızlı iletişim">
@@ -301,10 +282,6 @@
 
     <div class="mobile-drawer" data-mobile-drawer hidden>
         <div class="container mobile-drawer-inner">
-            <a href="{{ route('products.index') }}">Ürünler</a>
-            @foreach($megaRootCats->take(8) as $cat)
-                <a class="md-sub" href="{{ route('products.category', $cat['slug']) }}">{{ $cat['name'] }}</a>
-            @endforeach
             <a href="{{ route('services.index') }}">Kalibrasyon</a>
             @foreach(config('mta.services') as $service)
                 <a class="md-sub" href="{{ route('services.show', $service['slug']) }}">{{ $service['title'] }}</a>
@@ -313,12 +290,16 @@
             @foreach(config('mta.technical_services') as $item)
                 <a class="md-sub" href="{{ route('technical-services.show', $item['slug']) }}">{{ $item['title'] }}</a>
             @endforeach
+            <a href="{{ route('products.index') }}">Ürünler</a>
+            @foreach($megaRootCats->take(8) as $cat)
+                <a class="md-sub" href="{{ route('products.category', $cat['slug']) }}">{{ $cat['name'] }}</a>
+            @endforeach
             <a href="{{ route('scope') }}">Kapsam</a>
             <a href="{{ route('about') }}">Kurumsal</a>
-            <a href="{{ route('certificates') }}">Sertifikalar</a>
-            <a href="{{ route('blog.index') }}">Blog</a>
-            <a href="{{ route('knowledge.index') }}">Bilgi Merkezi</a>
-            <a href="{{ route('contact') }}">İletişim</a>
+            <a class="md-sub" href="{{ route('about') }}">Hakkımızda</a>
+            <a class="md-sub" href="{{ route('certificates') }}">Sertifikalar</a>
+            <a class="md-sub" href="{{ route('blog.index') }}">Blog</a>
+            <a class="md-sub" href="{{ route('contact') }}">İletişim</a>
         </div>
     </div>
 </header>

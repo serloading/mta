@@ -12,8 +12,7 @@
                     <a href="{{ route('home') }}" class="text-teal-400 hover:underline">Ana Sayfa</a><span>/</span>
                     <span>İletişim</span>
                 </nav>
-                <p class="font-mono text-xs font-bold uppercase tracking-wider text-teal-400">{{ $pageSeo['eyebrow'] ?? 'İletişim' }}</p>
-                <h1 class="mt-1 text-3xl font-extrabold lg:text-4xl">{{ $pageSeo['h1'] }}</h1>
+                <h1 class="text-3xl font-extrabold lg:text-4xl">MTA İletişim</h1>
                 <p class="mt-3 max-w-md text-sm text-slate-300">{{ $pageSeo['hero_text'] }}</p>
 
                 <dl class="mt-8 space-y-4 text-sm">
@@ -58,44 +57,23 @@
         </div>
     </section>
 
-    {{-- ============ SEO İÇERİK KARTLARI ============ --}}
-    @if(! empty($pageSeo['sections']))
-        <section class="my-10 grid grid-cols-1 gap-6 md:grid-cols-2">
-            @foreach($pageSeo['sections'] as $section)
-                <article class="rounded-2xl border border-slate-200 bg-white p-6">
-                    <h2 class="text-base font-bold text-slate-900">{{ $section['title'] }}</h2>
-                    <p class="mt-3 text-sm leading-relaxed text-slate-600">{{ $section['text'] }}</p>
-                    @if($loop->first && ! empty($pageSeo['request_info']))
-                        <ul class="mt-4 space-y-2 text-sm text-slate-600">
-                            @foreach($pageSeo['request_info'] as $item)
-                                <li class="flex items-start gap-2">
-                                    <svg class="mt-0.5 h-4 w-4 shrink-0 text-teal-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.5 7.5a1 1 0 01-1.4 0L3.3 9.7a1 1 0 011.4-1.4l3.1 3.1 6.8-6.8a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
-                                    <span>{{ $item }}</span>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @elseif(! $loop->first && ! empty($pageSeo['support_links']))
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            @foreach($pageSeo['support_links'] as $link)
-                                <a href="{{ $link['url'] }}" class="inline-flex rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-teal-50 hover:text-teal-700">{{ $link['anchor'] }}</a>
-                            @endforeach
-                        </div>
-                    @endif
-                </article>
-            @endforeach
-        </section>
-    @endif
-
     {{-- ============ ADRES / HARİTA ============ --}}
-    <section class="my-10 flex flex-col items-start justify-between gap-6 rounded-3xl border border-slate-200 bg-white p-8 md:flex-row md:items-center">
-        <div>
-            <p class="font-mono text-xs font-bold uppercase tracking-wider text-teal-700">Adres</p>
-            <h2 class="mt-1 text-lg font-bold text-slate-900">{{ config('mta.site.address') }}</h2>
+    @php($mapsUrl = 'https://www.google.com/maps/search/?api=1&query=40.88065695847028,29.23721823498121')
+    <section class="my-10 overflow-hidden rounded-3xl border border-slate-200 bg-white">
+        <div class="flex flex-col items-start justify-between gap-4 p-8 md:flex-row md:items-center">
+            <div>
+                <p class="font-mono text-xs font-bold uppercase tracking-wider text-teal-700">Adres</p>
+                <h2 class="mt-1 text-lg font-bold text-slate-900">{{ config('mta.site.address') }}</h2>
+            </div>
+            <a href="{{ $mapsUrl }}" target="_blank" rel="noopener"
+               class="inline-flex h-11 shrink-0 items-center justify-center rounded-lg border border-slate-300 px-6 text-sm font-bold text-slate-700 transition hover:border-teal-600 hover:text-teal-700">
+                Haritada Aç
+            </a>
         </div>
-        <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode(config('mta.site.address')) }}" target="_blank" rel="noopener"
-           class="inline-flex h-11 shrink-0 items-center justify-center rounded-lg border border-slate-300 px-6 text-sm font-bold text-slate-700 transition hover:border-teal-600 hover:text-teal-700">
-            Haritada Aç
-        </a>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d188.53748485729912!2d29.23721823498121!3d40.88065695847028!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cadcb2c6343aef%3A0x8c18e811c5b87e40!2zTVRBIEVuZMO8c3RyaSDDnHLDvG5sZXJp!5e0!3m2!1str!2str!4v1788313364297!5m2!1str!2str"
+            width="100%" height="380" style="border:0;" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"
+            title="MTA Endüstri konum haritası" class="block w-full"></iframe>
     </section>
 
     {{-- ============ SSS ============ --}}
