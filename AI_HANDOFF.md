@@ -9,7 +9,8 @@
 Laravel 13 + Blade + Vite + Tailwind v4 + Filament v4. cPanel/MySQL hedefli, SEO odaklı kalibrasyon & teknik ürün kataloğu sitesi. Sepet yok — katalog + teklif talebi mantığı.
 
 - **Ön yüz:** ana sayfa, `/kapsam`, `/urunler` (filtreli katalog), hizmet & teknik servis detay, kategori/marka sayfaları, blog, kurumsal sayfalar, dinamik `robots.txt` + `sitemap.xml`, JSON-LD.
-- **Yeni tasarım dili (Tailwind, teal-700 / slate-900 / amber-600):** ana sayfa, `/kapsam`, `/urunler`, kalibrasyon + teknik servis detay, header/footer/mega menü **tamamlandı**. Kategori/marka/liste/blog/kurumsal sayfalar hâlâ eski `app.css` semantik sınıflarında.
+- **Yeni tasarım dili (Tailwind, teal-700 / slate-900 / amber-600) TAMAM:** ana sayfa, `/kapsam`, `/urunler` + kategori + marka, kalibrasyon + teknik servis detay, ürün detay (PDP kendi scoped sistemi), blog + blog detay, teklif-al, iletişim, yasal sayfalar, header/footer/mega menü.
+- **Hâlâ eski `app.css` semantik sınıflarında (9 sayfa):** `/markalar`, `/hizmetler` liste, `/teknik-servis` liste, `/bilgi-merkezi` + kategori, `/hakkimizda`, `/sertifikalar`, `/referanslar`, `/ara`.
 - **Admin (Filament, `/admin`):** hizmet, teknik servis, ürün, kategori, marka, blog, sayfa, SSS, lead, redirect, SEO, schema, site ayarları + **Kapsam Kategorileri / Kapsam Grupları**.
 - **Canlı demo:** `https://demo.mtaend.com` (HTTP Basic: `mtademo` / `MTAdemo!2026`; `X-Robots-Tag: noindex`). Admin: `admin@mtaend.com` / `MtaPanel!2026x`.
 
@@ -71,7 +72,7 @@ ssh -i ~/.ssh/mtaend_deploy -p 2220 mtaend@65.109.68.25
 - [ ] Görsel optimizasyonu: WebP/AVIF, boyutlandırma (arşiv #74).
 - [ ] Kullanılmayan starter font/asset temizliği; `fontaine` build uyarısı (arşiv #75).
 - [ ] Lighthouse / Core Web Vitals (arşiv #76).
-- [ ] Kalan sayfaları yeni Tailwind tasarım diline geçir: kategori/marka/`/markalar`, `/hizmetler` & `/teknik-servis` liste, blog/bilgi merkezi, kurumsal sayfalar.
+- [ ] Kalan 9 sayfayı yeni Tailwind tasarım diline geçir: `/markalar`, `/hizmetler` liste, `/teknik-servis` liste, `/bilgi-merkezi` + kategori, `/hakkimizda`, `/sertifikalar`, `/referanslar`, `/ara`.
 - [ ] Teknik servis eski URL redirect'leri; schema çıktıları gerçek içerikle gözden geçirme (arşiv #23, #26).
-- [ ] Test kapsamı: sitemap + import + lead form testleri (arşiv #86).
+- [ ] Test kapsamı: sitemap + import + lead form testleri (arşiv #86). (`PublicPagesTest` eklendi — yasal/teklif/blog/iletişim smoke.)
 - [ ] GSC + GA4 kurulumu (arşiv #83); yedekleme planı (arşiv #82); canlı SEO checklist (arşiv #87).
