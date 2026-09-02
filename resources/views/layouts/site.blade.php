@@ -307,99 +307,112 @@
     @yield('content')
 </main>
 
-<footer class="site-footer">
-    <div class="container ft-grid">
-        <div class="ft-brand">
-            <img class="ft-logo" src="{{ asset('mta-logo.png') }}" width="64" height="50" alt="MTA Endüstri">
-            <p class="ft-slogan">Endüstriyel kalibrasyon hizmetleri ve teknik cihaz çözümlerinde akredite güven.</p>
-            <div class="ft-badges" aria-label="Akreditasyon">
-                <span class="ft-badge">TÜRKAK</span>
-                <span class="ft-badge">ISO 17025</span>
+@php
+    $ftSocialIcon = [
+        'LinkedIn' => '<path d="M5.3 8.8h3.2v10H5.3v-10Zm1.6-4.9a1.8 1.8 0 1 1 0 3.6 1.8 1.8 0 0 1 0-3.6Zm4.1 4.9h3.1v1.4c.4-.8 1.5-1.7 3.1-1.7 3.3 0 3.9 2.2 3.9 5v5.3h-3.2v-4.7c0-1.1 0-2.6-1.6-2.6s-1.9 1.2-1.9 2.5v4.8H11v-10Z"/>',
+        'Instagram' => '<path d="M7.5 3.8h9A3.7 3.7 0 0 1 20.2 7.5v9a3.7 3.7 0 0 1-3.7 3.7h-9a3.7 3.7 0 0 1-3.7-3.7v-9a3.7 3.7 0 0 1 3.7-3.7Zm0 2A1.7 1.7 0 0 0 5.8 7.5v9a1.7 1.7 0 0 0 1.7 1.7h9a1.7 1.7 0 0 0 1.7-1.7v-9a1.7 1.7 0 0 0-1.7-1.7h-9Zm4.5 3.1a3.1 3.1 0 1 1 0 6.2 3.1 3.1 0 0 1 0-6.2Zm0 2a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Zm4.2-2.5a.8.8 0 1 1 0-1.6.8.8 0 0 1 0 1.6Z"/>',
+        'Facebook' => '<path d="M13.7 20.3v-7.5h2.5l.4-2.9h-2.9V8.1c0-.8.2-1.4 1.4-1.4h1.6V4.1c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v1.9H8v2.9h2.5v7.5h3.2Z"/>',
+        'YouTube' => '<path d="M21 8.2a3 3 0 0 0-.5-1.3 2 2 0 0 0-1.4-.6C17.2 6.1 12 6.1 12 6.1s-5.2 0-7.1.2a2 2 0 0 0-1.4.6A3 3 0 0 0 3 8.2 31 31 0 0 0 2.8 12c0 1.3.1 2.6.2 3.8a3 3 0 0 0 .5 1.3 2.3 2.3 0 0 0 1.5.6c1.1.1 7 .2 7 .2s5.2 0 7.1-.2a2 2 0 0 0 1.4-.6 3 3 0 0 0 .5-1.3c.1-1.2.2-2.5.2-3.8s-.1-2.6-.2-3.8ZM10.2 14.6V9.9l4.7 2.4-4.7 2.3Z"/>',
+    ];
+@endphp
+<footer class="bg-slate-900 text-slate-300">
+    <div class="mx-auto max-w-[1320px] px-4 py-14 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3 lg:grid-cols-12">
+
+            {{-- Marka --}}
+            <div class="col-span-2 md:col-span-3 lg:col-span-4">
+                <div class="flex items-center gap-2">
+                    <img src="{{ asset('mta-logo.png') }}" width="64" height="50" alt="MTA Endüstri" class="h-11 w-auto">
+                    <span class="flex flex-col leading-tight">
+                        <strong class="text-sm font-extrabold text-white">MTA Endüstri</strong>
+                        <span class="text-[11px] font-semibold uppercase tracking-wide text-teal-400">TÜRKAK Onaylı</span>
+                    </span>
+                </div>
+                <p class="mt-4 max-w-xs text-sm leading-relaxed text-slate-400">
+                    Endüstriyel kalibrasyon hizmetleri ve teknik cihaz çözümlerinde akredite güven.
+                </p>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <span class="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-200">TÜRKAK</span>
+                    <span class="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-200">ISO/IEC 17025</span>
+                </div>
+                <div class="mt-5 flex gap-2" aria-label="Sosyal medya">
+                    @foreach(\App\Support\SiteSettings::socialLinks() as $social)
+                        <a href="{{ $social['url'] }}" aria-label="{{ $social['name'] }}" target="_blank" rel="noopener"
+                           class="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-slate-400 transition hover:border-teal-500 hover:text-teal-400">
+                            <svg viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4" aria-hidden="true">{!! $ftSocialIcon[$social['name']] ?? $ftSocialIcon['LinkedIn'] !!}</svg>
+                            <span class="sr-only">{{ $social['name'] }}</span>
+                        </a>
+                    @endforeach
+                </div>
             </div>
-            <div class="ft-social" aria-label="Sosyal medya">
-                @foreach(\App\Support\SiteSettings::socialLinks() as $social)
-                    <a href="{{ $social['url'] }}" aria-label="{{ $social['name'] }}" target="_blank" rel="noopener">
-                        @switch($social['name'])
-                            @case('LinkedIn')
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.3 8.8h3.2v10H5.3v-10Zm1.6-4.9a1.8 1.8 0 1 1 0 3.6 1.8 1.8 0 0 1 0-3.6Zm4.1 4.9h3.1v1.4c.4-.8 1.5-1.7 3.1-1.7 3.3 0 3.9 2.2 3.9 5v5.3h-3.2v-4.7c0-1.1 0-2.6-1.6-2.6s-1.9 1.2-1.9 2.5v4.8H11v-10Z"/></svg>
-                                @break
-                            @case('Instagram')
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 3.8h9A3.7 3.7 0 0 1 20.2 7.5v9a3.7 3.7 0 0 1-3.7 3.7h-9a3.7 3.7 0 0 1-3.7-3.7v-9a3.7 3.7 0 0 1 3.7-3.7Zm0 2A1.7 1.7 0 0 0 5.8 7.5v9a1.7 1.7 0 0 0 1.7 1.7h9a1.7 1.7 0 0 0 1.7-1.7v-9a1.7 1.7 0 0 0-1.7-1.7h-9Zm4.5 3.1a3.1 3.1 0 1 1 0 6.2 3.1 3.1 0 0 1 0-6.2Zm0 2a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Zm4.2-2.5a.8.8 0 1 1 0-1.6.8.8 0 0 1 0 1.6Z"/></svg>
-                                @break
-                            @case('Facebook')
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.7 20.3v-7.5h2.5l.4-2.9h-2.9V8.1c0-.8.2-1.4 1.4-1.4h1.6V4.1c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v1.9H8v2.9h2.5v7.5h3.2Z"/></svg>
-                                @break
-                            @case('YouTube')
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8.2a3 3 0 0 0-.5-1.3 2 2 0 0 0-1.4-.6C17.2 6.1 12 6.1 12 6.1s-5.2 0-7.1.2a2 2 0 0 0-1.4.6A3 3 0 0 0 3 8.2 31 31 0 0 0 2.8 12c0 1.3.1 2.6.2 3.8a3 3 0 0 0 .5 1.3 2.3 2.3 0 0 0 1.5.6c1.1.1 7 .2 7 .2s5.2 0 7.1-.2a2 2 0 0 0 1.4-.6 3 3 0 0 0 .5-1.3c.1-1.2.2-2.5.2-3.8s-.1-2.6-.2-3.8ZM10.2 14.6V9.9l4.7 2.4-4.7 2.3Z"/></svg>
-                                @break
-                        @endswitch
-                        <span class="sr-only">{{ $social['name'] }}</span>
-                    </a>
-                @endforeach
+
+            {{-- Kalibrasyon --}}
+            <div class="lg:col-span-2">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Kalibrasyon</h3>
+                <ul class="mt-4 space-y-2.5 text-sm">
+                    @foreach(config('mta.services') as $service)
+                        <li><a href="{{ route('services.show', $service['slug']) }}" class="text-slate-400 transition hover:text-white">{{ $service['title'] }}</a></li>
+                    @endforeach
+                    <li><a href="{{ route('scope') }}" class="text-slate-400 transition hover:text-white">Kalibrasyon Kapsamı</a></li>
+                </ul>
             </div>
-        </div>
 
-        <div class="ft-col">
-            <h3>Hizmetler</h3>
-            <ul>
-                @foreach(config('mta.services') as $service)
-                    <li><a href="{{ route('services.show', $service['slug']) }}">{{ $service['title'] }}</a></li>
-                @endforeach
-                <li><a href="{{ route('scope') }}">Kalibrasyon Kapsamı</a></li>
-            </ul>
-        </div>
+            {{-- Kategoriler --}}
+            <div class="lg:col-span-2">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Kategoriler</h3>
+                <ul class="mt-4 space-y-2.5 text-sm">
+                    <li><a href="{{ route('products.category', 'teraziler') }}" class="text-slate-400 transition hover:text-white">Teraziler</a></li>
+                    <li><a href="{{ route('products.category', 'ph-metre') }}" class="text-slate-400 transition hover:text-white">pH Metre</a></li>
+                    <li><a href="{{ route('products.category', 'refraktometre') }}" class="text-slate-400 transition hover:text-white">Refraktometre</a></li>
+                    <li><a href="{{ route('products.category', 'nem-tayin') }}" class="text-slate-400 transition hover:text-white">Nem Tayin Cihazı</a></li>
+                    <li><a href="{{ route('products.index') }}" class="text-slate-400 transition hover:text-white">Tüm Ürünler</a></li>
+                    <li><a href="{{ route('brands.index') }}" class="text-slate-400 transition hover:text-white">Markalar</a></li>
+                </ul>
+            </div>
 
-        <div class="ft-col">
-            <h3>Kategoriler</h3>
-            <ul>
-                <li><a href="{{ route('products.category', 'teraziler') }}">Teraziler &amp; Analiz Cihazları</a></li>
-                <li><a href="{{ route('products.category', 'nem-tayin') }}">Nem Tayin Cihazları</a></li>
-                <li><a href="{{ route('products.category', 'viskozimetre') }}">Viskozimetre &amp; Karıştırıcılar</a></li>
-                <li><a href="{{ route('products.category', 'titratorler') }}">Titratörler &amp; pH Metreler</a></li>
-                <li><a href="{{ route('brands.index') }}">Tüm Markalar</a></li>
-            </ul>
-        </div>
+            {{-- Teknik Servis --}}
+            <div class="lg:col-span-2">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Teknik Servis</h3>
+                <ul class="mt-4 space-y-2.5 text-sm">
+                    @foreach(config('mta.technical_services') as $item)
+                        <li><a href="{{ route('technical-services.show', $item['slug']) }}" class="text-slate-400 transition hover:text-white">{{ $item['title'] }}</a></li>
+                    @endforeach
+                    <li><a href="{{ route('knowledge.index') }}" class="text-slate-400 transition hover:text-white">Bilgi Merkezi</a></li>
+                </ul>
+            </div>
 
-        <div class="ft-col">
-            <h3>Teknik Servis</h3>
-            <ul>
-                @foreach(config('mta.technical_services') as $item)
-                    <li><a href="{{ route('technical-services.show', $item['slug']) }}">{{ $item['title'] }}</a></li>
-                @endforeach
-                <li><a href="{{ route('knowledge.index') }}">Sıkça Sorulan Sorular</a></li>
-            </ul>
-        </div>
-
-        <div class="ft-col ft-contact">
-            <h3>İletişim</h3>
-            <ul>
-                <li>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    <span>{{ config('mta.site.address') }}</span>
-                </li>
-                <li>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"/></svg>
-                    <a href="tel:{{ preg_replace('/\D+/', '', config('mta.site.phone')) }}">{{ config('mta.site.phone') }}</a>
-                </li>
-                <li>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-                    <a href="mailto:{{ config('mta.site.email') }}">{{ config('mta.site.email') }}</a>
-                </li>
-            </ul>
-            <a class="ft-cta" href="{{ route('quote') }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                Teklif Formuna Git
-            </a>
+            {{-- İletişim --}}
+            <div class="col-span-2 md:col-span-3 lg:col-span-2">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">İletişim</h3>
+                <ul class="mt-4 space-y-3 text-sm text-slate-400">
+                    <li class="flex items-start gap-2">
+                        <svg class="mt-0.5 h-4 w-4 shrink-0 text-teal-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span>{{ config('mta.site.address') }}</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 shrink-0 text-teal-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"/></svg>
+                        <a href="tel:{{ preg_replace('/\D+/', '', config('mta.site.phone')) }}" class="transition hover:text-white">{{ config('mta.site.phone') }}</a>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 shrink-0 text-teal-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                        <a href="mailto:{{ config('mta.site.email') }}" class="transition hover:text-white">{{ config('mta.site.email') }}</a>
+                    </li>
+                </ul>
+                <a href="{{ route('quote') }}" class="mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-amber-600 px-4 text-sm font-bold text-white transition hover:bg-amber-500">
+                    Teklif Formuna Git
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="ft-bottom">
-        <div class="container ft-bottom-shell">
+    <div class="border-t border-white/10">
+        <div class="mx-auto flex max-w-[1320px] flex-col gap-3 px-4 py-5 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
             <span>© {{ date('Y') }} MTA Endüstri. Tüm hakları saklıdır.</span>
-            <nav class="ft-legal" aria-label="Yasal">
-                <a href="{{ route('legal.kvkk') }}">KVKK Aydınlatma Metni</a>
-                <a href="{{ route('legal.privacy') }}">Gizlilik Politikası</a>
-                <a href="{{ route('legal.cookies') }}">Çerez Politikası</a>
+            <nav class="flex flex-wrap gap-x-5 gap-y-2" aria-label="Yasal">
+                <a href="{{ route('legal.kvkk') }}" class="transition hover:text-slate-300">KVKK Aydınlatma Metni</a>
+                <a href="{{ route('legal.privacy') }}" class="transition hover:text-slate-300">Gizlilik Politikası</a>
+                <a href="{{ route('legal.cookies') }}" class="transition hover:text-slate-300">Çerez Politikası</a>
             </nav>
         </div>
     </div>
