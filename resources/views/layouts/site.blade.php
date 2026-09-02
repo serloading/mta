@@ -206,18 +206,18 @@
                 <div class="mega-nav-item">
                     <a class="mega-trigger" href="{{ route('products.index') }}" aria-haspopup="true" aria-expanded="false" data-mega-trigger>Ürünler {!! $mi['cdown'] !!}</a>
                     <div class="mega-menu mega-menu--products !border-t-0 !bg-transparent !shadow-none" data-product-mega>
-                        <div class="mx-auto mt-1 w-full max-w-[960px] overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-2xl">
+                        <div class="mx-auto mt-1 w-full max-w-[1040px] overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-2xl">
                             {{-- Kategoriler: içerik genişliğinde kompakt çipler --}}
                             <div class="px-5 pb-4 pt-5">
                                 <div class="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
                                     <span class="text-sm font-bold text-slate-900">Ürün Kategorileri</span>
                                     <a href="{{ route('products.index') }}" class="text-xs font-medium text-teal-600 hover:underline">Tüm Kataloğu Gör →</a>
                                 </div>
-                                <div class="flex flex-wrap gap-1.5">
+                                <div class="flex flex-wrap gap-2">
                                     @foreach($megaRootCats as $cat)
                                         <a href="{{ route('products.category', $cat['slug']) }}"
-                                           class="inline-flex items-center gap-1.5 rounded-md border border-slate-200 px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition-colors hover:border-teal-600 hover:bg-teal-50 hover:text-teal-700">
-                                            <span class="shrink-0 text-slate-400 [&>svg]:h-3.5 [&>svg]:w-3.5">{!! $megaIcon($cat['name']) !!}</span>
+                                           class="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-[13px] font-semibold text-slate-700 transition-colors hover:border-teal-600 hover:bg-teal-50 hover:text-teal-700">
+                                            <span class="shrink-0 text-slate-400 [&>svg]:h-4 [&>svg]:w-4">{!! $megaIcon($cat['name']) !!}</span>
                                             <span>{{ $cat['name'] }}</span>
                                         </a>
                                     @endforeach
@@ -226,13 +226,13 @@
 
                             {{-- ALT ŞERİT: marka logoları (büyük) --}}
                             @if($megaBrandLogos->isNotEmpty())
-                                <div class="border-t border-slate-200 bg-slate-50 px-6 py-5">
-                                    <p class="mb-3 text-center text-[11px] font-bold uppercase tracking-[.12em] text-slate-400">Tedarikçi &amp; Servis Ortağı Markalar</p>
-                                    <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-5">
+                                <div class="border-t border-slate-200 bg-slate-50 px-6 py-6">
+                                    <p class="mb-4 text-center text-[11px] font-bold uppercase tracking-[.12em] text-slate-400">Tedarikçi &amp; Servis Ortağı Markalar</p>
+                                    <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
                                         @foreach($megaBrandLogos as $b)
                                             <a href="{{ route('products.brand', $b['slug']) }}" aria-label="{{ $b['name'] }}"
-                                               class="opacity-70 grayscale transition hover:opacity-100 hover:grayscale-0">
-                                                <img src="{{ asset($b['logo']) }}" alt="{{ $b['name'] }}" class="h-9 w-auto max-w-[130px] object-contain" loading="lazy">
+                                               class="opacity-75 grayscale transition hover:opacity-100 hover:grayscale-0">
+                                                <img src="{{ asset($b['logo']) }}" alt="{{ $b['name'] }}" class="h-12 w-auto max-w-[160px] object-contain" loading="lazy">
                                             </a>
                                         @endforeach
                                     </div>
