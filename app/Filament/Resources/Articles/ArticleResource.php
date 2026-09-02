@@ -81,6 +81,7 @@ class ArticleResource extends Resource
                         ->options([
                             'Kalibrasyon Rehberleri' => 'Kalibrasyon Rehberleri',
                             'Satın Alma Rehberleri' => 'Satın Alma Rehberleri',
+                            'Laboratuvar Cihazları' => 'Laboratuvar Cihazları',
                             'Cihaz Tanıtımları' => 'Cihaz Tanıtımları',
                             'Teknik Servis ve Bakım' => 'Teknik Servis ve Bakım',
                             'Ölçüm Güvenilirliği' => 'Ölçüm Güvenilirliği',
