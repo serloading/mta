@@ -154,7 +154,7 @@
                    class="group flex cursor-pointer flex-col items-center rounded-2xl border border-slate-200 bg-white p-4 text-center transition-all hover:border-teal-500 hover:shadow-lg">
                     <div class="flex h-20 w-20 items-center justify-center rounded-xl bg-white p-1.5">
                         @if(! empty($cat['image']))
-                            <img src="{{ asset($cat['image']) }}" alt="{{ $cat['name'] }}" class="h-auto max-h-full w-auto max-w-full object-contain" loading="lazy">
+                            <img src="{{ img_url($cat['image']) }}" alt="{{ $cat['name'] }}" class="h-auto max-h-full w-auto max-w-full object-contain" loading="lazy">
                         @else
                             <svg class="h-9 w-9 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 8-9-5-9 5v8l9 5 9-5z"/><path d="m3.3 7.5 8.7 5 8.7-5"/><path d="M12 12.5V22"/></svg>
                         @endif
@@ -175,7 +175,7 @@
                 @foreach($partnerBrands as $brand)
                     <a href="{{ $brand['url'] }}"
                        class="group flex flex-col items-center gap-1.5 {{ empty($brand['authorized']) ? 'opacity-80 grayscale transition-all hover:opacity-100 hover:grayscale-0' : 'transition-all' }}">
-                        <img src="{{ asset($brand['logo']) }}" alt="{{ $brand['name'] }}" class="h-8 w-auto object-contain lg:h-10" loading="lazy">
+                        <img src="{{ img_url($brand['logo']) }}" alt="{{ $brand['name'] }}" class="h-8 w-auto object-contain lg:h-10" loading="lazy">
                         @if(! empty($brand['authorized']))
                             <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
                                 <svg class="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
@@ -245,7 +245,7 @@
                            class="group flex cursor-pointer gap-4 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 transition-all hover:border-teal-500 hover:shadow-lg">
                             <div class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100">
                                 @if(! empty($article['image']))
-                                    <img src="{{ asset($article['image']) }}" alt="{{ $article['title'] }}" class="h-full w-full object-cover" loading="lazy">
+                                    <img src="{{ img_url($article['image']) }}" alt="{{ $article['title'] }}" class="h-full w-full object-cover" loading="lazy">
                                 @else
                                     <svg class="h-8 w-8 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                                 @endif

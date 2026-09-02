@@ -35,7 +35,7 @@
             <div class="lg:col-span-5">
                 <div class="overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-2">
                     <div class="flex h-44 items-center justify-center overflow-hidden rounded-xl bg-white p-4">
-                        <img src="{{ asset($technicalServicesSeo['image']) }}" alt="{{ $technicalServicesSeo['image_alt'] }}" class="max-h-full w-auto max-w-full object-contain">
+                        <img src="{{ img_url($technicalServicesSeo['image']) }}" alt="{{ $technicalServicesSeo['image_alt'] }}" class="max-h-full w-auto max-w-full object-contain">
                     </div>
                     <div class="px-3 py-3">
                         <p class="text-xs font-bold uppercase tracking-wide text-teal-300">Kapsam</p>
@@ -72,7 +72,7 @@
                 <article class="group flex flex-col overflow-hidden rounded-2xl border {{ $authLabel ? 'border-amber-300 ring-1 ring-amber-200' : 'border-slate-200' }} bg-white transition hover:-translate-y-0.5 hover:shadow-lg">
                     @if(! empty($item['image']))
                         <div class="relative flex h-40 items-center justify-center overflow-hidden border-b border-slate-100 bg-white p-5">
-                            <img src="{{ asset($item['image']) }}" alt="{{ $item['image_alt'] ?? $item['title'] }}" class="max-h-full w-auto max-w-full object-contain" loading="lazy">
+                            <img src="{{ img_url($item['image']) }}" alt="{{ $item['image_alt'] ?? $item['title'] }}" class="max-h-full w-auto max-w-full object-contain" loading="lazy">
                             @if($authLabel)
                                 <span class="absolute right-2 top-2 rounded-full bg-amber-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-700 shadow-sm">{{ $authLabel }}</span>
                             @endif

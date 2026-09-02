@@ -16,7 +16,7 @@
         <div class="flex flex-wrap items-center gap-4">
             @if(! empty($brand['logo']))
                 <span class="flex h-14 items-center justify-center rounded-xl bg-white px-4">
-                    <img src="{{ asset($brand['logo']) }}" alt="{{ $brand['name'] }}" class="h-8 w-auto object-contain" loading="lazy">
+                    <img src="{{ img_url($brand['logo']) }}" alt="{{ $brand['name'] }}" class="h-8 w-auto object-contain" loading="lazy">
                 </span>
             @endif
             <div>

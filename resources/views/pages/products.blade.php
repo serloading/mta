@@ -26,7 +26,7 @@
             @foreach($brands->filter(fn ($b) => ! empty($b['logo'])) as $b)
                 <a href="{{ route('products.brand', $b['slug']) }}"
                    class="flex items-center justify-center rounded-xl border border-slate-200/80 bg-white p-4 grayscale transition-all hover:border-teal-500 hover:shadow-sm hover:grayscale-0">
-                    <img src="{{ asset($b['logo']) }}" alt="{{ $b['name'] }}" class="h-8 w-auto object-contain lg:h-10" loading="lazy">
+                    <img src="{{ img_url($b['logo']) }}" alt="{{ $b['name'] }}" class="h-8 w-auto object-contain lg:h-10" loading="lazy">
                 </a>
             @endforeach
         </div>

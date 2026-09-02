@@ -127,7 +127,7 @@
                         <div class="catalog-card-body">
                             <div class="catalog-card-media relative mb-3 flex h-48 w-full items-center justify-center overflow-hidden rounded-lg border border-slate-100 bg-white p-5">
                                 @if(! empty($p['image']))
-                                    <img src="{{ asset($p['image']) }}" alt="{{ $p['image_alt'] ?? $p['name'] }}" class="h-auto max-h-full w-auto max-w-full object-contain" loading="lazy">
+                                    <img src="{{ img_url($p['image']) }}" alt="{{ $p['image_alt'] ?? $p['name'] }}" class="h-auto max-h-full w-auto max-w-full object-contain" loading="lazy">
                                 @else
                                     {!! $deviceIcon !!}
                                 @endif

@@ -52,7 +52,7 @@
                    class="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-lg">
                     <div class="flex h-28 items-center justify-center border-b border-slate-100 bg-white p-6">
                         @if($logo)
-                            <img src="{{ asset($logo) }}" alt="{{ $card['alt'] ?? $brand['name'] . ' logosu' }}" class="max-h-full w-auto max-w-full object-contain grayscale transition group-hover:grayscale-0" loading="lazy">
+                            <img src="{{ img_url($logo) }}" alt="{{ $card['alt'] ?? $brand['name'] . ' logosu' }}" class="max-h-full w-auto max-w-full object-contain grayscale transition group-hover:grayscale-0" loading="lazy">
                         @else
                             <span class="text-lg font-extrabold text-slate-800">{{ $brand['name'] }}</span>
                         @endif

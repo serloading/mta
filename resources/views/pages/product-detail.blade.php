@@ -20,10 +20,10 @@
     // --- gallery images (main + gallery strip) ------------------------------
     $galleryImages = collect();
     if (! empty($product['image'])) {
-        $galleryImages->push(asset($product['image']));
+        $galleryImages->push(img_url($product['image']));
     }
     foreach (($product['gallery'] ?? []) as $galleryImage) {
-        $galleryImages->push(asset($galleryImage));
+        $galleryImages->push(img_url($galleryImage));
     }
     $galleryImages = $galleryImages->filter()->unique()->values();
     $mainImage = $galleryImages->first();
@@ -103,7 +103,7 @@
                 <a class="pdp-brandmark" href="{{ route('products.brand', $product['brand_slug']) }}"
                    aria-label="{{ $product['brand'] }} markasının tüm ürünleri">
                     @if($brandLogo)
-                        <img src="{{ asset($brandLogo) }}" alt="">
+                        <img src="{{ img_url($brandLogo) }}" alt="">
                     @endif
                     <span>{{ $product['brand'] }}</span>
                 </a>
@@ -322,7 +322,7 @@
                 @forelse($relatedServices as $service)
                     <article class="pdp-service-card">
                         @if(! empty($service['image']))
-                            <img src="{{ asset($service['image']) }}" alt="{{ $service['image_alt'] ?? $service['title'] }}" loading="lazy">
+                            <img src="{{ img_url($service['image']) }}" alt="{{ $service['image_alt'] ?? $service['title'] }}" loading="lazy">
                         @else
                             <span class="pdp-service-ph">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.7 2.7-2-2 2.7-2.7z"/></svg>

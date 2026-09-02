@@ -16,7 +16,7 @@
         <div class="flex flex-wrap items-center gap-4">
             @if(! empty($category['image']))
                 <span class="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-white p-1.5">
-                    <img src="{{ asset($category['image']) }}" alt="{{ $category['image_alt'] ?? $category['name'] }}" class="h-auto max-h-full w-auto max-w-full object-contain" loading="lazy">
+                    <img src="{{ img_url($category['image']) }}" alt="{{ $category['image_alt'] ?? $category['name'] }}" class="h-auto max-h-full w-auto max-w-full object-contain" loading="lazy">
                 </span>
             @endif
             <div>

@@ -232,7 +232,7 @@
                                         @foreach($megaBrandLogos as $b)
                                             <a href="{{ route('products.brand', $b['slug']) }}" aria-label="{{ $b['name'] }}"
                                                class="opacity-75 grayscale transition hover:opacity-100 hover:grayscale-0">
-                                                <img src="{{ asset($b['logo']) }}" alt="{{ $b['name'] }}" class="h-12 w-auto max-w-[160px] object-contain" loading="lazy">
+                                                <img src="{{ img_url($b['logo']) }}" alt="{{ $b['name'] }}" class="h-12 w-auto max-w-[160px] object-contain" loading="lazy">
                                             </a>
                                         @endforeach
                                     </div>

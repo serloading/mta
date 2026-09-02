@@ -25,7 +25,7 @@
             <div class="lg:col-span-5">
                 <div class="overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-2">
                     <div class="flex h-44 items-center justify-center overflow-hidden rounded-xl bg-white p-4">
-                        <img src="{{ asset($servicesSeo['image']) }}" alt="{{ $servicesSeo['image_alt'] }}" class="max-h-full w-auto max-w-full object-contain">
+                        <img src="{{ img_url($servicesSeo['image']) }}" alt="{{ $servicesSeo['image_alt'] }}" class="max-h-full w-auto max-w-full object-contain">
                     </div>
                     <div class="px-3 py-3">
                         <p class="text-xs font-bold uppercase tracking-wide text-teal-300">Kapsam</p>
@@ -61,7 +61,7 @@
                 <article class="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-lg">
                     @if(! empty($service['image']))
                         <div class="flex h-40 items-center justify-center overflow-hidden border-b border-slate-100 bg-white p-5">
-                            <img src="{{ asset($service['image']) }}" alt="{{ $service['image_alt'] ?? $service['title'] }}" class="max-h-full w-auto max-w-full object-contain" loading="lazy">
+                            <img src="{{ img_url($service['image']) }}" alt="{{ $service['image_alt'] ?? $service['title'] }}" class="max-h-full w-auto max-w-full object-contain" loading="lazy">
                         </div>
                     @endif
                     <div class="flex flex-1 flex-col p-5">
