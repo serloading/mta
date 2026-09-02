@@ -55,6 +55,8 @@ ssh -i ~/.ssh/mtaend_deploy -p 2220 mtaend@65.109.68.25
 ```
 - Sunucuda PHP CLI `ea-php83` = `/usr/local/bin/ea-php83`; `composer` = `/usr/local/bin/composer`.
 - `public/images/**/*.webp` git'te tutuluyor (`tools/optimize-images.php` üretir) → `git pull` ile gelir, ayrı scp gerekmez.
+- Sahipsiz ürün görselleri sunucuda `public/images/_orphan/`'a taşındı (gitignore; `tools/move-orphan-images.php`, `RESTORE=1` ile geri alınır). Carbolite/Memmert/IKA/Spectraalyzer setleri burada — ürün kaydı açılınca `tools/match-product-images.php` tekrar çalıştırılır.
+- `tools/match-product-images.php` → görselsiz ürünleri dosya adıyla eşleştirir (`APPLY=1`). Demo'da 46 ürüne uygulandı.
 - `public/.htaccess` sunucuda staging bloğu (noindex + basic auth) içerir → `git update-index --skip-worktree` set edilmiş, `git reset --hard` YAPMA. Yedek: `public/.htaccess.demo`.
 
 ## Açık işler
@@ -70,12 +72,22 @@ ssh -i ~/.ssh/mtaend_deploy -p 2220 mtaend@65.109.68.25
 ### Ana domaine geçiş (`mtaend.com`)
 - [ ] WordPress tam yedek → docroot'u Laravel `public/`'e çevir → `.env` `APP_URL` + staging `.htaccess` bloğunu kaldır → cache → eski WP URL 301 haritası (`redirects` kaynağı) → sitemap Search Console. Detay: `docs/DEPLOY-CPANEL.md`.
 
+### Blog sistemi (2026-09-03)
+- Blog artık DB (Filament `ArticleResource`) + `config/mta.articles` + `articleSeoContent()` arm'larından besleniyor. Placeholder "fallback" yazıları kaldırıldı (thin content).
+- `article-detail`: `articleSeoContent` arm > adminden yazılan `body` (RichEditor HTML, `.legal-prose`) > minimal.
+- `Article::scopeLive()` = yayında + `published_at <= now()` → ileri tarihli yazı otomatik yayınlanır. `reading_time` boşsa body'den hesaplanır.
+- `ArticleResource`: kategori Select (8 seçenek, otomatik slug), yazar/tarih default.
+- `LeadResource` → "CSV indir" header action.
+- Kaldırılan eski stub slug'ları (artık 404, yeniden yazılmalı): `refraktometre-nedir`, `terazi-kalibrasyonu-nedir`, `viskozimetre-ne-ise-yarar`, `hassas-terazi-secim-rehberi`, `ph-metre-secerken-nelere-dikkat-edilmeli`, `cihaz-bakim-rehberi`, `kalibrasyon-periyodu-nasil-belirlenir`.
+
 ### SEO — sonraki tur
 - [ ] Kalan generic-içerikli kategoriler için özel SEO arm'ı: `titratorler` (root), `pipetler`, `rotasyonel-viskozimetre`, alt kategoriler.
-- [ ] `terazi-kalibrasyonu-nedir`, `sicaklik-kalibrasyonu-nedir` bilgi yazıları (uzun kuyruk hizmet kelimeleri).
-- [ ] İş kararı: otoklav / NIR / kül fırını / brookfield / memmert tedariki → sayfa açılır mı? (bkz. `SEO/MTA_SEO_AKSIYON_RAPORU_2026-09.md`)
+- [ ] `terazi-kalibrasyonu-nedir`, `sicaklik-kalibrasyonu-nedir` bilgi yazıları — artık `articleSeoContent` arm'ı veya admin `body` ile.
+- [ ] İş kararı: otoklav / NIR / kül fırını / brookfield / memmert tedariki → sayfa açılır mı? (`SEO/MTA_SEO_AKSIYON_RAPORU_2026-09.md` §2-3, §9)
 - [ ] Slug 301'leri: `/urunler/polarimetre`→`polarimetreler`, `vorteks-karistirici`→`vorteks-karistiricilar`, `hotplate`→`hot-plate` (admin → 301 Yönlendirmeler).
 - [ ] Eski WP URL → yeni URL 301 haritası (cutover öncesi tam liste).
+- [x] ~~Zayıf sayfa title'ları~~ — `seo_entries` (İletişim/Blog/Markalar…) anahtar kelime + marka ekiyle güncellendi (migration).
+- [ ] `Product` JSON-LD PDP'de yok.
 
 ### Kalite / polish
 - [ ] Responsive QA (mobil/tablet/geniş ekran) (arşiv #71).
