@@ -47,11 +47,14 @@ Host `65.109.68.25` port **2220** kullanıcı `mtaend`, key `~/.ssh/mtaend_deplo
 scp -P 2220 -i ~/.ssh/mtaend_deploy -r public/build mtaend@65.109.68.25:~/public_html/mta-demo/public/
 ssh -i ~/.ssh/mtaend_deploy -p 2220 mtaend@65.109.68.25
   cd ~/public_html/mta-demo && git pull --ff-only
+  composer dump-autoload -o          # composer.json autoload değiştiyse (ör. app/helpers.php)
   ea-php83 artisan migrate --force              # yeni migration varsa
   ea-php83 artisan mta:sync-scope               # yeni kapsam config'i varsa
   ea-php83 artisan optimize:clear
   ea-php83 artisan view:cache && ea-php83 artisan config:cache && ea-php83 artisan route:cache && ea-php83 artisan filament:optimize
 ```
+- Sunucuda PHP CLI `ea-php83` = `/usr/local/bin/ea-php83`; `composer` = `/usr/local/bin/composer`.
+- `public/images/**/*.webp` git'te tutuluyor (`tools/optimize-images.php` üretir) → `git pull` ile gelir, ayrı scp gerekmez.
 - `public/.htaccess` sunucuda staging bloğu (noindex + basic auth) içerir → `git update-index --skip-worktree` set edilmiş, `git reset --hard` YAPMA. Yedek: `public/.htaccess.demo`.
 
 ## Açık işler
@@ -67,13 +70,21 @@ ssh -i ~/.ssh/mtaend_deploy -p 2220 mtaend@65.109.68.25
 ### Ana domaine geçiş (`mtaend.com`)
 - [ ] WordPress tam yedek → docroot'u Laravel `public/`'e çevir → `.env` `APP_URL` + staging `.htaccess` bloğunu kaldır → cache → eski WP URL 301 haritası (`redirects` kaynağı) → sitemap Search Console. Detay: `docs/DEPLOY-CPANEL.md`.
 
+### SEO — sonraki tur
+- [ ] Kalan generic-içerikli kategoriler için özel SEO arm'ı: `titratorler` (root), `pipetler`, `rotasyonel-viskozimetre`, alt kategoriler.
+- [ ] `terazi-kalibrasyonu-nedir`, `sicaklik-kalibrasyonu-nedir` bilgi yazıları (uzun kuyruk hizmet kelimeleri).
+- [ ] İş kararı: otoklav / NIR / kül fırını / brookfield / memmert tedariki → sayfa açılır mı? (bkz. `SEO/MTA_SEO_AKSIYON_RAPORU_2026-09.md`)
+- [ ] Slug 301'leri: `/urunler/polarimetre`→`polarimetreler`, `vorteks-karistirici`→`vorteks-karistiricilar`, `hotplate`→`hot-plate` (admin → 301 Yönlendirmeler).
+- [ ] Eski WP URL → yeni URL 301 haritası (cutover öncesi tam liste).
+
 ### Kalite / polish
 - [ ] Responsive QA (mobil/tablet/geniş ekran) (arşiv #71).
-- [ ] Görsel optimizasyonu: WebP/AVIF, boyutlandırma (arşiv #74).
+- [x] ~~Görsel optimizasyonu: WebP~~ — `tools/optimize-images.php` + `img_url()` helper; 307 webp, %76 küçülme (2026-09-02). AVIF ve responsive `srcset` hâlâ yapılabilir.
 - [ ] Kullanılmayan starter font/asset temizliği; `fontaine` build uyarısı (arşiv #75).
 - [ ] Lighthouse / Core Web Vitals (arşiv #76).
 - [x] ~~Kalan 9 sayfayı yeni tasarıma geçir~~ — tamamlandı (2026-09-02).
-- [ ] Kullanılmayan blade partial temizliği: `taxonomy-card`, `catalog-lower`, `catalog-results`, `catalog-filters`, `catalog-product-card`, `product-card`, `product-spec-filters`, `cta` artık hiçbir sayfada include edilmiyor.
-- [ ] Teknik servis eski URL redirect'leri; schema çıktıları gerçek içerikle gözden geçirme (arşiv #23, #26).
-- [ ] Test kapsamı: sitemap + import + lead form testleri (arşiv #86). (`PublicPagesTest` eklendi — yasal/teklif/blog/iletişim smoke.)
+- [x] ~~Kullanılmayan blade partial temizliği~~ — 8 partial silindi (2026-09-02).
+- [~] Ölü legacy CSS: `.cui-*` / `.clower-*` silindi (-1019 satır). `.section` / `.cta-band` / `.ft-*` blokları hâlâ app.css'te (`.desktop-nav` + `.product-gallery-strip` ile iç içe — satır satır temizlik gerekiyor).
+- [x] ~~FAQPage + GeoCoordinates JSON-LD~~ — eklendi (2026-09-02). `Product` schema PDP'de hâlâ yok.
+- [ ] Test kapsamı: sitemap + import + lead form testleri (arşiv #86). (`PublicPagesTest` var — 19/19.)
 - [ ] GSC + GA4 kurulumu (arşiv #83); yedekleme planı (arşiv #82); canlı SEO checklist (arşiv #87).
