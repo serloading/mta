@@ -825,7 +825,7 @@ class SiteController extends Controller
             ->map(fn ($p) => [
                 'label' => $p['name'],
                 'sub' => trim(($p['brand'] ?? '') . ' · ' . ($p['category'] ?? ''), ' ·'),
-                'image' => ! empty($p['image']) ? asset($p['image']) : null,
+                'image' => ! empty($p['image']) ? img_url($p['image']) : null,
                 'url' => route('products.show', $p['slug']),
             ])
             ->values()
