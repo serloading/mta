@@ -336,8 +336,10 @@ class AdminPanelTest extends TestCase
 
         $this->get('/markalar')
             ->assertOk()
-            ->assertSee('<a class="content-card category-card taxonomy-card taxonomy-card--brand"', false)
-            ->assertSee('<a class="content-card category-card taxonomy-card taxonomy-card--category"', false)
+            ->assertSee('Katalogda Yer Alan Markalar', false)
+            ->assertSee('max-w-[1320px]', false)
+            ->assertSee(route('products.brand', 'and'), false)
+            ->assertDontSee('taxonomy-card', false)
             ->assertDontSee('card-kicker">1 ürün', false);
     }
 
