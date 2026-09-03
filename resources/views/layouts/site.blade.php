@@ -82,12 +82,6 @@
             <a class="mb-logo" href="{{ route('home') }}" aria-label="MTA Endüstri ana sayfa">
                 <img src="{{ asset('mta-logo.png') }}" width="74" height="58" alt="MTA Endüstri logosu">
             </a>
-            @php
-                $mbLogoNote = collect($topbarAuthorizedServices ?? [])->firstWhere('header_note');
-            @endphp
-            @if($mbLogoNote)
-                <a class="mb-logo-note" href="{{ $mbLogoNote['url'] }}">{{ $mbLogoNote['header_note'] }}</a>
-            @endif
 
             @php
                 $mi = [
@@ -270,7 +264,10 @@
                 @foreach($topbarAuthorizedServices ?? [] as $mbAuth)
                     @if($mbAuth['logo'])
                         <a class="mb-authlogo" href="{{ $mbAuth['url'] }}" title="{{ $mbAuth['brand'] }} {{ $mbAuth['role'] }}" aria-label="{{ $mbAuth['brand'] }} {{ $mbAuth['role'] }}">
-                            <img src="{{ img_url($mbAuth['logo']) }}" alt="{{ $mbAuth['brand'] }} {{ $mbAuth['role'] }}" width="66" height="37" loading="lazy">
+                            <img src="{{ img_url($mbAuth['logo']) }}" alt="{{ $mbAuth['brand'] }} logosu" width="52" height="29" loading="lazy">
+                            @if($mbAuth['header_note'])
+                                <span class="mb-authlogo-txt">{!! nl2br(e($mbAuth['header_note'])) !!}</span>
+                            @endif
                         </a>
                     @endif
                 @endforeach

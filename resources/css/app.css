@@ -213,23 +213,6 @@ a {
 
 .mb-logo img { height: 58px; width: auto; object-fit: contain; }
 
-/* Ana logo yanındaki yetkili servis notu */
-.mb-logo-note {
-    flex: none;
-    max-width: 140px;
-    padding-left: 10px;
-    margin-left: 2px;
-    border-left: 1px solid #e2e8f0;
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 1.25;
-    letter-spacing: .01em;
-    color: #d97706;
-    text-decoration: none;
-    transition: color .15s ease;
-}
-.mb-logo-note:hover { color: #b45309; }
-
 .mb-logo-text {
     display: flex;
     flex-direction: column;
@@ -429,15 +412,26 @@ a {
 .mb-authlogo {
     display: inline-flex;
     align-items: center;
-    height: 38px;
-    padding: 0 10px;
+    gap: 8px;
+    height: 40px;
+    padding: 0 10px 0 8px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     background: #fff;
+    text-decoration: none;
     transition: border-color .15s ease, box-shadow .15s ease;
 }
 .mb-authlogo:hover { border-color: #d97706; box-shadow: 0 1px 3px rgba(217, 119, 6, .18); }
-.mb-authlogo img { height: 24px; width: auto; object-fit: contain; display: block; }
+.mb-authlogo img { height: 26px; width: auto; object-fit: contain; display: block; flex: none; }
+.mb-authlogo-txt {
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    color: #b45309;
+    white-space: nowrap;
+}
 
 .mb-icon-btn {
     width: 38px;
@@ -813,9 +807,10 @@ a {
 .is-drawer-open .mobile-drawer { display: block; }
 
 /* responsive */
-@media (max-width: 1300px) {
-    .mb-logo-note { display: none; }
-    .mb-nav { margin-left: 20px; gap: 6px; }
+@media (max-width: 1360px) {
+    .mb-nav { margin-left: 18px; gap: 5px; }
+    .mb-authlogo-txt { display: none; }
+    .mb-search { flex-basis: 220px; max-width: 220px; }
 }
 
 @media (max-width: 1180px) {
