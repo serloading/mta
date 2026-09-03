@@ -70,6 +70,7 @@ class AppServiceProvider extends ServiceProvider
                     'short' => $entry['short'] ?? (($entry['brand'] ?? '') . ' Yetkili Servis'),
                     'role' => $entry['role'] ?? 'Yetkili Servis',
                     'brand' => $entry['brand'] ?? '',
+                    'header_note' => $entry['header_note'] ?? null,
                     'logo' => $logo,
                     'url' => $url,
                 ];

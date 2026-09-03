@@ -846,6 +846,7 @@ return [
             'logo' => 'images/brands/bahco.png',
             'role' => 'Türkiye Yetkili Merkez Servisi',
             'short' => 'Bahco Yetkili Servis',
+            'header_note' => 'Bahco Türkiye Yetkili Servisi',
             'tagline' => 'Bahco tork anahtarları ve tork ürünleri için yetkili merkez servis',
             'blurb' => 'MTA Endüstri, Bahco tork anahtarları ve tork ürünleri için yetkili merkez servistir. '
                 . 'Arıza tespiti, bakım, ayar ve kalibrasyon öncesi hazırlık işlemlerini üretici standartlarında yürütür; '

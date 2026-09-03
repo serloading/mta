@@ -82,6 +82,12 @@
             <a class="mb-logo" href="{{ route('home') }}" aria-label="MTA Endüstri ana sayfa">
                 <img src="{{ asset('mta-logo.png') }}" width="74" height="58" alt="MTA Endüstri logosu">
             </a>
+            @php
+                $mbLogoNote = collect($topbarAuthorizedServices ?? [])->firstWhere('header_note');
+            @endphp
+            @if($mbLogoNote)
+                <a class="mb-logo-note" href="{{ $mbLogoNote['url'] }}">{{ $mbLogoNote['header_note'] }}</a>
+            @endif
 
             @php
                 $mi = [
