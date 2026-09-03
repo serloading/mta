@@ -407,6 +407,20 @@ a {
 /* actions */
 .mb-actions { display: flex; align-items: center; gap: 10px; flex: none; margin-left: 20px; }
 
+/* Yetkili servis logosu (Bahco) — Teklif Al butonunun yanında */
+.mb-authlogo {
+    display: inline-flex;
+    align-items: center;
+    height: 38px;
+    padding: 0 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.mb-authlogo:hover { border-color: #d97706; box-shadow: 0 1px 3px rgba(217, 119, 6, .18); }
+.mb-authlogo img { height: 24px; width: auto; object-fit: contain; display: block; }
+
 .mb-icon-btn {
     width: 38px;
     height: 38px;
@@ -788,6 +802,7 @@ a {
 
 @media (max-width: 1024px) {
     .mb-nav,
+    .mb-authlogo,
     .mb-cta { display: none; }
 
     .mb-search { display: none; }

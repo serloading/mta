@@ -65,8 +65,12 @@ class AppServiceProvider extends ServiceProvider
                         $url = url('/');
                     }
                 }
+                $logo = ! empty($entry['logo']) && is_file(public_path($entry['logo'])) ? $entry['logo'] : null;
                 $badges[] = [
                     'short' => $entry['short'] ?? (($entry['brand'] ?? '') . ' Yetkili Servis'),
+                    'role' => $entry['role'] ?? 'Yetkili Servis',
+                    'brand' => $entry['brand'] ?? '',
+                    'logo' => $logo,
                     'url' => $url,
                 ];
             }
