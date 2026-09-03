@@ -135,7 +135,7 @@ a {
 .top-bar-inner {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 1rem;
     min-height: 36px;
 }
@@ -807,15 +807,21 @@ a {
 .is-drawer-open .mobile-drawer { display: block; }
 
 /* responsive */
-@media (max-width: 1360px) {
-    .mb-nav { margin-left: 18px; gap: 5px; }
-    .mb-authlogo-txt { display: none; }
-    .mb-search { flex-basis: 220px; max-width: 220px; }
+@media (max-width: 1400px) {
+    .mb-nav { margin-left: 16px; gap: 4px; }
+    .mb-search { flex-basis: 200px; max-width: 200px; }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1240px) {
     .mb-logo-text { display: none; }
-    .mb-search { margin: 0 16px; max-width: none; }
+    .mb-nav { margin-left: 8px; gap: 2px; }
+    .mega-trigger,
+    .mb-nav-link { padding: 8px 8px; font-size: 13px; }
+    .mb-search { flex-basis: 150px; max-width: 150px; margin: 0 6px 0 auto; }
+    .mb-actions { margin-left: 8px; gap: 6px; }
+    .mb-authlogo { padding: 0 8px 0 6px; gap: 6px; }
+    .mb-authlogo img { height: 22px; }
+    .mb-authlogo-txt { font-size: 9px; letter-spacing: .01em; }
 }
 
 @media (max-width: 1024px) {

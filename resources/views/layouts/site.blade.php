@@ -37,9 +37,6 @@
 <header class="site-header" data-header>
     <div class="top-bar" data-topbar>
         <div class="container top-bar-inner">
-            <div class="tb-left">
-                <span class="tb-tagline">Akredite Kalibrasyon &amp; Teknik Servis</span>
-            </div>
             <div class="tb-right">
                 <div class="tb-contact">
                     <a href="tel:{{ $ct_phone_raw }}">
