@@ -81,7 +81,6 @@
         <div class="container main-bar-inner">
             <a class="mb-logo" href="{{ route('home') }}" aria-label="MTA Endüstri ana sayfa">
                 <img src="{{ asset('mta-logo.png') }}" width="74" height="58" alt="MTA Endüstri logosu">
-                <span class="mb-logo-text"><strong>MTA Endüstri</strong><small>TÜRKAK Onaylı</small></span>
             </a>
 
             @php
@@ -258,6 +257,10 @@
                 <a class="mb-icon-btn" href="{{ route('quote') }}" aria-label="Hızlı iletişim">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1 1 12 20zm4.6-6c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2a.4.4 0 0 0 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3A2.8 2.8 0 0 0 6.7 10a4.9 4.9 0 0 0 1 2.6 11.2 11.2 0 0 0 4.3 3.8c2 .8 2 .5 2.4.5a2.5 2.5 0 0 0 1.6-1.2 2 2 0 0 0 .2-1.2c-.1-.1-.3-.2-.5-.3z"/></svg>
                 </a>
+                <a class="mb-cta" href="{{ route('quote') }}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                    Teklif Al
+                </a>
                 @foreach($topbarAuthorizedServices ?? [] as $mbAuth)
                     @if($mbAuth['logo'])
                         <a class="mb-authlogo" href="{{ $mbAuth['url'] }}" title="{{ $mbAuth['brand'] }} {{ $mbAuth['role'] }}" aria-label="{{ $mbAuth['brand'] }} {{ $mbAuth['role'] }}">
@@ -265,10 +268,6 @@
                         </a>
                     @endif
                 @endforeach
-                <a class="mb-cta" href="{{ route('quote') }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-                    Teklif Al
-                </a>
                 <button type="button" class="mb-search-toggle" data-search-toggle aria-label="Aramayı aç">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 </button>
