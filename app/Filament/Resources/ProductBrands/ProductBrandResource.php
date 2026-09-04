@@ -21,6 +21,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -33,6 +34,10 @@ class ProductBrandResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
     protected static ?string $navigationLabel = 'Ürün Markaları';
+
+    protected static ?string $modelLabel = 'Marka';
+
+    protected static ?string $pluralModelLabel = 'Markalar';
 
     protected static string|UnitEnum|null $navigationGroup = 'Katalog';
 
@@ -59,11 +64,17 @@ class ProductBrandResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderable('sort_order')
+            ->defaultPaginationPageOption(50)
             ->columns([
-                TextColumn::make('name')->label('Marka')->searchable()->sortable(),
-                TextColumn::make('products_count')->counts('products')->label('Ürün')->sortable(),
+                ImageColumn::make('logo')
+                    ->label('')
+                    ->getStateUsing(fn ($record): ?string => $record->logo ? \App\Support\Img::url($record->logo) : null)
+                    ->height(30)->width(80),
+                TextColumn::make('name')->label('Marka')->searchable()->sortable()->weight('semibold'),
+                TextColumn::make('products_count')->counts('products')->label('Ürün')->sortable()->badge(),
                 IconColumn::make('is_active')->label('Aktif')->boolean(),
-                TextColumn::make('sort_order')->label('Sıra')->sortable(),
+                TextColumn::make('sort_order')->label('Sıra')->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->recordActions([EditAction::make()->label('Düzenle'), DeleteAction::make()->label('Sil')->visible(fn () => auth()->user()?->isAdmin())])
             ->toolbarActions([DeleteBulkAction::make()->label('Toplu sil')->visible(fn () => auth()->user()?->isAdmin())])

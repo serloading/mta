@@ -36,6 +36,10 @@ class PageResource extends Resource
 
     protected static ?string $navigationLabel = 'İçerik Sayfaları';
 
+    protected static ?string $modelLabel = 'içerik sayfası';
+
+    protected static ?string $pluralModelLabel = 'içerik sayfaları';
+
     protected static string|UnitEnum|null $navigationGroup = 'İçerik';
 
     protected static ?int $navigationSort = 10;

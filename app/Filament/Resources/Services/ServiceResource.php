@@ -39,6 +39,10 @@ class ServiceResource extends Resource
 
     protected static ?string $navigationLabel = 'Kalibrasyon Hizmetleri';
 
+    protected static ?string $modelLabel = 'kalibrasyon hizmeti';
+
+    protected static ?string $pluralModelLabel = 'kalibrasyon hizmetleri';
+
     protected static string|UnitEnum|null $navigationGroup = 'Hizmetler';
 
     protected static ?int $navigationSort = 10;

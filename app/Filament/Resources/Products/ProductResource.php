@@ -31,6 +31,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -92,7 +93,8 @@ class ProductResource extends Resource
                                 ->label('Kısa bağlantı adı')
                                 ->required()
                                 ->maxLength(255)
-                                ->helperText('Ürün adından otomatik türetilir; gerekirse elle düzenleyin.'),
+                                ->unique(ignoreRecord: true)
+                                ->helperText('Ürün adından otomatik türetilir; gerekirse elle düzenleyin. Sitede /urun/<bağlantı> adresinde açılır, benzersiz olmalı.'),
                             Select::make('status')
                                 ->label('Durum')
                                 ->options([
@@ -272,13 +274,34 @@ class ProductResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->striped()
+            ->defaultPaginationPageOption(25)
+            ->paginationPageOptions([25, 50, 100])
             ->columns([
-                TextColumn::make('name')->label('Ürün')->searchable()->sortable(),
+                ImageColumn::make('image')
+                    ->label('')
+                    ->getStateUsing(fn (Product $record): ?string => $record->image ? \App\Support\Img::url($record->image) : null)
+                    ->height(44)
+                    ->width(44)
+                    ->extraImgAttributes(['loading' => 'lazy'])
+                    ->defaultImageUrl(asset('favicon.png')),
+                TextColumn::make('name')
+                    ->label('Ürün')
+                    ->searchable()
+                    ->sortable()
+                    ->wrap()
+                    ->weight('semibold')
+                    ->description(fn (Product $record): ?string => $record->model ?: $record->sku ?: null),
                 TextColumn::make('category.name')->label('Kategori')->sortable()->toggleable(),
                 TextColumn::make('brand.name')->label('Marka')->sortable()->toggleable(),
                 TextColumn::make('status')
                     ->label('Durum')
                     ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'published' => 'success',
+                        'archived' => 'gray',
+                        default => 'warning',
+                    })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'draft' => 'Taslak',
                         'published' => 'Aktif',
@@ -286,9 +309,9 @@ class ProductResource extends Resource
                         default => $state,
                     })
                     ->sortable(),
-                IconColumn::make('is_featured')->label('Öne çıkan')->boolean(),
-                TextColumn::make('sort_order')->label('Sıra')->sortable(),
-                TextColumn::make('updated_at')->label('Son düzenleme')->dateTime('d.m.Y H:i')->sortable(),
+                IconColumn::make('is_featured')->label('Öne çıkan')->boolean()->toggleable(),
+                TextColumn::make('sort_order')->label('Sıra')->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')->label('Son düzenleme')->dateTime('d.m.Y H:i')->sortable()->toggleable(),
             ])
             ->filters([
                 SelectFilter::make('status')

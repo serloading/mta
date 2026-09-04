@@ -31,6 +31,10 @@ class FaqResource extends Resource
 
     protected static ?string $navigationLabel = 'SSS Yönetimi';
 
+    protected static ?string $modelLabel = 'SSS kaydı';
+
+    protected static ?string $pluralModelLabel = 'SSS kayıtları';
+
     protected static string|UnitEnum|null $navigationGroup = 'İçerik';
 
     protected static ?int $navigationSort = 30;

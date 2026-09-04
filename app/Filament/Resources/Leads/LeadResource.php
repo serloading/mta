@@ -30,6 +30,10 @@ class LeadResource extends Resource
 
     protected static ?string $navigationLabel = 'Teklif Talepleri';
 
+    protected static ?string $modelLabel = 'teklif talebi';
+
+    protected static ?string $pluralModelLabel = 'teklif talepleri';
+
     protected static string|UnitEnum|null $navigationGroup = 'Satış';
 
     protected static ?int $navigationSort = 10;

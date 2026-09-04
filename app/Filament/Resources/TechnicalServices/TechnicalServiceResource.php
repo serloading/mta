@@ -36,6 +36,10 @@ class TechnicalServiceResource extends Resource
 
     protected static ?string $navigationLabel = 'Teknik Servis';
 
+    protected static ?string $modelLabel = 'teknik servis kaydı';
+
+    protected static ?string $pluralModelLabel = 'teknik servis kayıtları';
+
     protected static string|UnitEnum|null $navigationGroup = 'Hizmetler';
 
     protected static ?int $navigationSort = 20;

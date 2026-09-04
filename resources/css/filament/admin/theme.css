@@ -24,3 +24,27 @@
     min-height: 5rem;
     max-height: 24rem;
 }
+
+/* ---- Kaydet butonu her zaman görünür: yapışkan alt bar (düzenle/ekle sayfaları) ---- */
+.fi-page:is(.fi-resource-edit-record-page, .fi-resource-create-record-page) .fi-sc-form .fi-sc-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    margin: 0.5rem -1.5rem -1.5rem;
+    padding: 0.875rem 1.5rem;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+:root.dark .fi-page:is(.fi-resource-edit-record-page, .fi-resource-create-record-page) .fi-sc-form .fi-sc-actions {
+    background: rgba(24, 24, 27, 0.92);
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ---- Tablolarda satır okunabilirliği + görsel küçük resim hizası ---- */
+.fi-ta-table tbody tr:nth-child(even) { background: rgba(15, 23, 42, 0.02); }
+:root.dark .fi-ta-table tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+.fi-ta-image img { object-fit: contain; background: #fff; border-radius: 6px; }
+
+/* ---- Uzun ürün adları tabloda sarılsın, kesilmesin ---- */
+.fi-ta-text-item { white-space: normal; }

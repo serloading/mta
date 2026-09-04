@@ -31,6 +31,10 @@ class RedirectResource extends Resource
 
     protected static ?string $navigationLabel = '301 Yönlendirmeler';
 
+    protected static ?string $modelLabel = 'Yönlendirme';
+
+    protected static ?string $pluralModelLabel = 'Yönlendirmeler';
+
     protected static string|UnitEnum|null $navigationGroup = 'SEO';
 
     protected static ?int $navigationSort = 30;
